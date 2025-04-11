@@ -46,11 +46,46 @@ function pastedc {
 }
 
 function pastedm {
-  echo "this is pastedm:"
+  dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("yyyy-MM-dd HH:mm:ss")')"
+  dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")')"
+  dc_new=$(sed -n '1p' "$clip_file")
+  dm_new=$(sed -n '2p' "$clip_file")
+  echo "File:         $1"
+  echo "DateCreated:  $dc_old (old)"
+  echo "DateCreated:  $dc_new (new)"
+  echo "DateModified: $dm_old (old)"
+  echo "DateModified: $dm_new (new)"
+
+  read -p "Apply changes? (y/n) " yn
+  if [ "${yn,,}" = "y" ]
+  then
+    powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
+    echo "Done"
+  else
+    echo "Cancel"
+  fi
 }
 
 function pastedcdm {
-  echo "this is pastedcdm:"
+  dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("yyyy-MM-dd HH:mm:ss")')"
+  dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")')"
+  dc_new=$(sed -n '1p' "$clip_file")
+  dm_new=$(sed -n '2p' "$clip_file")
+  echo "File:         $1"
+  echo "DateCreated:  $dc_old (old)"
+  echo "DateCreated:  $dc_new (new)"
+  echo "DateModified: $dm_old (old)"
+  echo "DateModified: $dm_new (new)"
+
+  read -p "Apply changes? (y/n) " yn
+  if [ "${yn,,}" = "y" ]
+  then
+    powershell.exe -Command "(Get-Item '$1').CreationTime=[datetime]::ParseExact('$dc_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
+    powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
+    echo "Done"
+  else
+    echo "Cancel"
+  fi
 }
 
 main "$@"
