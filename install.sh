@@ -7,12 +7,18 @@ iconPath="$(cygpath -w "$(pwd)")\tschanger.ico"
 #echo $scriptPath
 #echo $iconPath
 
-baseKey='HKCR\*\shell'
-rootKey="$baseKey\\TimestampChanger"
-itemPath="$rootKey\\shell"
+fRootKey='HKEY_CLASSES_ROOT\*\shell\TimestampChanger'
+dRootKey='HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger'
 
 function install() {
-  add_menu_root "$rootKey" "Timestamp Changer" "$iconPath"
+  install_internal "$fRootKey"
+  install_internal "$dRootKey"
+  echo "Install done"
+}
+
+function install_internal() {
+  itemPath="$1\\shell"
+  add_menu_root "$1" "Timestamp Changer" "$iconPath"
   add_menu_item "$itemPath\\010Backup" "Backup" "Backup..."
   add_menu_item "$itemPath\\020Restore" "Restore" "Restore..."
   add_item_sep  "$itemPath\\020Restore"
@@ -20,7 +26,6 @@ function install() {
   add_menu_item "$itemPath\\040PasteDateCreated" "Paste DateCreated" "Paste DateCreated..."
   add_menu_item "$itemPath\\050PasteDateModified" "Paste DateModified" "Paste DateModified..."
   add_menu_item "$itemPath\\060PasteDateCreatedModified" "Paste DateCreated and Modified" "Paste DateCreated and Modified..."
-  echo "Install done"
 }
 
 function add_menu_root() {
@@ -40,9 +45,14 @@ function add_item_sep() {
 }
 
 function uninstall() {
-  if reg.exe query "$rootKey" > /dev/null 2>&1; then
-    echo "y" | reg.exe delete "$rootKey" > /dev/null 2>&1
-    echo "deleted"
+  uninstall_internal "$fRootKey"
+  uninstall_internal "$dRootKey"
+}
+
+function uninstall_internal() {
+  if reg.exe query "$1" > /dev/null 2>&1; then
+    echo "y" | reg.exe delete "$1" > /dev/null 2>&1
+    echo "deleted $fRootKey"
   fi
 }
 
