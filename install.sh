@@ -19,13 +19,13 @@ function install() {
 function install_internal() {
   itemPath="$1\\shell"
   add_menu_root "$1" "Timestamp Changer" "$iconPath"
-  add_menu_item "$itemPath\\010Backup" "Backup" "Backup..."
-  add_menu_item "$itemPath\\020Restore" "Restore" "Restore..."
-  add_item_sep  "$itemPath\\020Restore"
-  add_menu_item "$itemPath\\030CopyTimestamps" "Copy Timestamps" "Copy Timestamps..."
-  add_menu_item "$itemPath\\040PasteDateCreated" "Paste DateCreated" "Paste DateCreated..."
-  add_menu_item "$itemPath\\050PasteDateModified" "Paste DateModified" "Paste DateModified..."
-  add_menu_item "$itemPath\\060PasteDateCreatedModified" "Paste DateCreated and Modified" "Paste DateCreated and Modified..."
+  #add_menu_item "$itemPath\\010Backup" "Backup" "backup"
+  #add_menu_item "$itemPath\\020Restore" "Restore" "restore"
+  #add_item_sep  "$itemPath\\020Restore"
+  add_menu_item "$itemPath\\030CopyTimestamps" "Copy Timestamps" "copy"
+  add_menu_item "$itemPath\\040PasteDateCreated" "Paste DateCreated" "pastedc"
+  add_menu_item "$itemPath\\050PasteDateModified" "Paste DateModified" "pastedm"
+  add_menu_item "$itemPath\\060PasteDateCreatedModified" "Paste DateCreated and Modified" "pastedcdm"
 }
 
 function add_menu_root() {
@@ -37,7 +37,7 @@ function add_menu_root() {
 function add_menu_item() {
   # key, label, arg
   reg.exe add "$1" -ve -d "$2" -f
-  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\" \"%2\" \"%3\" \"%4\" \"%5\" " -f
+  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\"" -f
 }
 
 function add_item_sep() {
