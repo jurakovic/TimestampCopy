@@ -37,7 +37,7 @@ function add_menu_root() {
 function add_menu_item() {
   # key, label, arg
   reg.exe add "$1" -ve -d "$2" -f
-  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"%1\" \"$3\"" -f
+  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\" \"%2\" \"%3\" \"%4\" \"%5\" " -f
 }
 
 function add_item_sep() {
