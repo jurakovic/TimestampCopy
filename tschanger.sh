@@ -14,8 +14,8 @@ function main {
 }
 
 function copy {
-  dc="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("$datetime_format")')"
-  dm="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("$datetime_format")')"
+  dc="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
+  dm="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   echo "File:         $1"
   echo "DateCreated:  $dc"
   echo "DateModified: $dm"
@@ -27,8 +27,8 @@ function copy {
 
 function pastedc {
   guard
-  dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("$datetime_format")')"
-  dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("$datetime_format")')"
+  dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
+  dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
@@ -49,8 +49,8 @@ function pastedc {
 
 function pastedm {
   guard
-  dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("$datetime_format")')"
-  dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("$datetime_format")')"
+  dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
+  dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
@@ -71,8 +71,8 @@ function pastedm {
 
 function pastedcdm {
   guard
-  dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("$datetime_format")')"
-  dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("$datetime_format")')"
+  dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
+  dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
