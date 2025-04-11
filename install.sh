@@ -10,6 +10,52 @@ iconPath="$(cygpath -w "$(pwd)")\tschanger.ico"
 fRootKey='HKEY_CLASSES_ROOT\*\shell\TimestampChanger'
 dRootKey='HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger'
 
+function main() {
+  if [ "$#" -eq 1 ]
+  then
+    case $1 in
+      "-i") install ;;
+      "-u") uninstall ;;
+    esac
+  else
+    show_menu
+  fi
+}
+
+function show_menu() {
+  set +e
+  clear
+  echo
+  echo -e "Timestamp Changer"
+  echo "                            "
+  echo "  [i] Install               "
+  echo "  [u] Uninstall             "
+  echo "                            "
+  echo "  [q] Quit                  "
+  echo
+  read -p "Choose option: " option
+  clear
+  __perform_action $option
+  if [ $option != "q" ] # else "quit"
+  then
+    __pause
+    show_menu
+  fi
+}
+
+function __perform_action() {
+  case $1 in
+    "i") install ;;
+    "u") uninstall ;;
+    "q") ;; # do nothing, will quit
+    *)   echo "unknown option: $1" ;;
+  esac
+}
+
+function __pause() {
+  read -p "Press any key to continue..." -n1 -s; echo
+}
+
 function install() {
   install_internal "$fRootKey"
   install_internal "$dRootKey"
@@ -47,6 +93,7 @@ function add_item_sep() {
 function uninstall() {
   uninstall_internal "$fRootKey"
   uninstall_internal "$dRootKey"
+  echo "Uninstall done"
 }
 
 function uninstall_internal() {
@@ -56,9 +103,4 @@ function uninstall_internal() {
   fi
 }
 
-function main() {
-  uninstall
-  install
-}
-
-main
+main "$@"
