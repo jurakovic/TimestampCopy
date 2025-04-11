@@ -42,7 +42,7 @@ function pastedc {
     powershell.exe -Command "(Get-Item '$1').CreationTime=[datetime]::ParseExact('$dc_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
     echo "Done"
   else
-    echo "Cancel"
+    echo "Canceled"
   fi
 }
 
@@ -64,7 +64,7 @@ function pastedm {
     powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
     echo "Done"
   else
-    echo "Cancel"
+    echo "Canceled"
   fi
 }
 
@@ -87,14 +87,26 @@ function pastedcdm {
     powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', 'yyyy-MM-dd HH:mm:ss', \$null)"
     echo "Done"
   else
-    echo "Cancel"
+    echo "Canceled"
   fi
 }
 
 function guard() {
   if ! [ -f "$clip_file" ]; then
     echo "Timestamps clipboard empty"
-    read -p "Press any key to continue..." -n1 -s; echo
+    read -p "Press any key to exit..." -n1 -s; echo
+    exit 0
+  fi
+
+  dc=$(sed -n '1p' "$clip_file")
+  dm=$(sed -n '2p' "$clip_file")
+  powershell.exe -Command "[datetime]::ParseExact('$dc', 'yyyy-MM-dd HH:mm:ss', \$null)" > /dev/null &&
+  powershell.exe -Command "[datetime]::ParseExact('$dm', 'yyyy-MM-dd HH:mm:ss', \$null)" > /dev/null
+
+  if [ ! $? -eq 0 ];
+  then
+    echo "Timestamps clipboard corrupted. Copy new timestamps."
+    read -p "Press any key to exit..." -n1 -s; echo
     exit 0
   fi
 }
