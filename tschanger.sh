@@ -25,6 +25,7 @@ function copy {
 }
 
 function pastedc {
+  guard
   dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dc_new=$(sed -n '1p' "$clip_file")
@@ -46,6 +47,7 @@ function pastedc {
 }
 
 function pastedm {
+  guard
   dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dc_new=$(sed -n '1p' "$clip_file")
@@ -67,6 +69,7 @@ function pastedm {
 }
 
 function pastedcdm {
+  guard
   dc_old="$(powershell.exe -Command '(Get-Item '$1').CreationTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dm_old="$(powershell.exe -Command '(Get-Item '$1').LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")')"
   dc_new=$(sed -n '1p' "$clip_file")
@@ -85,6 +88,14 @@ function pastedcdm {
     echo "Done"
   else
     echo "Cancel"
+  fi
+}
+
+function guard() {
+  if ! [ -f "$clip_file" ]; then
+    echo "Timestamps clipboard empty"
+    read -p "Press any key to continue..." -n1 -s; echo
+    exit 0
   fi
 }
 
