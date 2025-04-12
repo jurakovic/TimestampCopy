@@ -135,9 +135,11 @@ function pastedc {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
+  echo "---"
   highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  echo "---"
   highlight_diff "DateModified:" "$dm_old" "$dm_old"
-
+  echo "---"
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
   then
@@ -155,9 +157,11 @@ function pastedm {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
+  echo "---"
   highlight_diff "DateCreated: " "$dc_old" "$dc_old"
+  echo "---"
   highlight_diff "DateModified:" "$dm_old" "$dm_new"
-
+  echo "---"
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
   then
@@ -175,9 +179,11 @@ function paste {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
+  echo "---"
   highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  echo "---"
   highlight_diff "DateModified:" "$dm_old" "$dm_new"
-
+  echo "---"
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
   then
@@ -216,10 +222,9 @@ function highlight_diff() {
 
   local reset="\033[0m"
   local green="\033[1;32m"
-  local dim="\033[2m"
   local changed=0
 
-  echo -e "$label ${dim}${old} (old)$reset"
+  echo -e "$label $old (old)$reset"
 
   echo -n "$label "
 
@@ -232,7 +237,7 @@ function highlight_diff() {
     local old_val="$1"
     local new_val="$2"
     if [[ "$old_val" == "$new_val" ]]; then
-      echo -ne "${dim}${new_val}${reset}"
+      echo -ne "${new_val}${reset}"
     else
       echo -ne "${green}${new_val}${reset}"
       changed=1
@@ -240,21 +245,21 @@ function highlight_diff() {
   }
 
   color_part "$old_y" "$new_y"
-  echo -ne "${dim}-${reset}"
+  echo -ne "-"
   color_part "$old_m" "$new_m"
-  echo -ne "${dim}-${reset}"
+  echo -ne "-"
   color_part "$old_d" "$new_d"
   echo -n " "
   color_part "$old_H" "$new_H"
-  echo -ne "${dim}:${reset}"
+  echo -ne ":"
   color_part "$old_M" "$new_M"
-  echo -ne "${dim}:${reset}"
+  echo -ne ":"
   color_part "$old_S" "$new_S"
 
   if [[ "$changed" -eq 1 ]]; then
     echo -e " ${green}(new)${reset}"
   else
-    echo -e " ${dim}(new)${reset}"
+    echo -e " (new)${reset}"
   fi
 }
 
