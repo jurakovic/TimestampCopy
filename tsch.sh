@@ -101,6 +101,7 @@ function add_item_sep() {
 function uninstall() {
   uninstall_internal "$fRootKey"
   uninstall_internal "$dRootKey"
+  rm -f "$clip_file"
   echo "Uninstall done"
 }
 
