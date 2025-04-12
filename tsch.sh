@@ -66,7 +66,7 @@ function __pause() {
 }
 
 function install() {
-  echo "Adding keys..."
+  echo "Installing..."
   install_internal "$fRootKey"
   install_internal "$dRootKey"
   echo "Done"
@@ -75,13 +75,13 @@ function install() {
 function install_internal() {
   itemPath="$1\\shell"
   add_menu_root "$1" "Timestamp Changer" "$iconPath"
-  #add_menu_item "$itemPath\\010Backup" "Backup" "backup"
-  #add_menu_item "$itemPath\\020Restore" "Restore" "restore"
-  #add_item_sep  "$itemPath\\020Restore"
-  add_menu_item "$itemPath\\030CopyTimestamps" "Copy Timestamps" "copy"
-  add_menu_item "$itemPath\\040PasteDateCreated" "Paste DateCreated" "pastedc"
-  add_menu_item "$itemPath\\050PasteDateModified" "Paste DateModified" "pastedm"
-  add_menu_item "$itemPath\\060PasteDateCreatedModified" "Paste DateCreated and Modified" "pastedcdm"
+  add_menu_item "$itemPath\\010CopyDateCreatedModified" "Copy" "copy"
+  add_menu_item "$itemPath\\020PasteDateCreatedModified" "Paste" "paste"
+  add_menu_item "$itemPath\\030PasteDateCreated" "Paste DateCreated" "pastedc"
+  add_menu_item "$itemPath\\040PasteDateModified" "Paste DateModified" "pastedm"
+  #add_item_sep  "$itemPath\\040PasteDateModified"
+  #add_menu_item "$itemPath\\050Backup" "Backup" "backup"
+  #add_menu_item "$itemPath\\060Restore" "Restore" "restore"
 }
 
 function add_menu_root() {
@@ -101,7 +101,7 @@ function add_item_sep() {
 }
 
 function uninstall() {
-  echo "Deleting keys..."
+  echo "Uninstalling..."
   uninstall_internal "$fRootKey"
   uninstall_internal "$dRootKey"
   rm -f "$clip_file"
@@ -172,7 +172,7 @@ function pastedm {
   fi
 }
 
-function pastedcdm {
+function paste {
   guard
   dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
   dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
