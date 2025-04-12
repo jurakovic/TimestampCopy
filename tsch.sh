@@ -1,25 +1,26 @@
 #!/bin/bash
 
 ##### constants
-
+homepage="https://github.com/jurakovic/timestamp-changer"
+version="0.1.0"
 bashPath="C:\Program Files\Git\usr\bin\bash.exe"
 scriptPath="$(cygpath -w "$(pwd)")\tsch.sh"
 iconPath="$(cygpath -w "$(pwd)")\tsch.ico"
-
 fRootKey='HKEY_CLASSES_ROOT\*\shell\TimestampChanger'
 dRootKey='HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger'
-
 clip_file="$HOME/.tsch"
 datetime_format="yyyy-MM-dd HH:mm:ss"
 
 function main() {
-  if [ "$#" -eq 1 ] # for install/uninstall
+  if [ "$#" -eq 1 ] # cli arguments
   then
     case $1 in
-      "-i") install ;;
-      "-u") uninstall ;;
+      -i|--install) install ;;
+      -u|--uninstall) uninstall ;;
+      -v|--version) echo "$version" ;;
+      -h|--help) echo "For help visit $homepage" ;;
     esac
-  elif [ "$#" -eq 2 ] # for copy/paste operations
+  elif [ "$#" -eq 2 ] # context menu commands
   then
     $1 "$2"
     __pause
@@ -34,7 +35,7 @@ function show_menu() {
   set +e
   clear
   echo
-  echo -e "Timestamp Changer"
+  echo -e "Timestamp Changer ($version)"
   echo "                            "
   echo "  [i] Install               "
   echo "  [u] Uninstall             "
@@ -113,7 +114,7 @@ function uninstall_internal() {
   fi
 }
 
-##### copy/paste functions
+##### context menu commands (copy/paste functions)
 
 function copy {
   dc="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
