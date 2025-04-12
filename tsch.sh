@@ -135,10 +135,8 @@ function pastedc {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
-  echo "DateCreated:  $dc_old (old)"
-  echo "DateCreated:  $dc_new (new)"
-  echo "DateModified: $dm_old (old)"
-  echo "DateModified: $dm_new (new)"
+  highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  highlight_diff "DateModified:" "$dm_old" "$dm_old"
 
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
@@ -157,10 +155,8 @@ function pastedm {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
-  echo "DateCreated:  $dc_old (old)"
-  echo "DateCreated:  $dc_new (new)"
-  echo "DateModified: $dm_old (old)"
-  echo "DateModified: $dm_new (new)"
+  highlight_diff "DateCreated: " "$dc_old" "$dc_old"
+  highlight_diff "DateModified:" "$dm_old" "$dm_new"
 
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
@@ -179,10 +175,8 @@ function paste {
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
   echo "File:         $1"
-  echo "DateCreated:  $dc_old (old)"
-  echo "DateCreated:  $dc_new (new)"
-  echo "DateModified: $dm_old (old)"
-  echo "DateModified: $dm_new (new)"
+  highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  highlight_diff "DateModified:" "$dm_old" "$dm_new"
 
   read -p "Apply changes? (y/n) " yn
   if [ "${yn,,}" = "y" ]
@@ -212,6 +206,24 @@ function guard() {
     echo "Timestamps clipboard corrupted. Copy new timestamps."
     read -p "Press any key to exit..." -n1 -s; echo
     exit 0
+  fi
+}
+
+function highlight_diff() {
+  local label="$1"
+  local old="$2"
+  local new="$3"
+
+  local reset="\033[0m"
+  local green="\033[1;32m"
+  local dim="\033[2m"
+
+  echo -e "$label ${dim}${old} (old)$reset"
+
+  if [[ "$old" != "$new" ]]; then
+    echo -e "$label ${green}${new} (new)$reset"
+  else
+    echo -e "$label ${dim}${new} (new)$reset"
   fi
 }
 
