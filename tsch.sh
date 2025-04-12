@@ -217,11 +217,12 @@ function highlight_diff() {
   local reset="\033[0m"
   local green="\033[1;32m"
   local dim="\033[2m"
+  local changed=0
 
   echo -e "$label ${dim}${old} (old)$reset"
 
   echo -n "$label "
-  
+
   IFS='- :'
   read -r old_y old_m old_d old_H old_M old_S <<< "$old"
   read -r new_y new_m new_d new_H new_M new_S <<< "$new"
@@ -234,6 +235,7 @@ function highlight_diff() {
       echo -ne "${dim}${new_val}${reset}"
     else
       echo -ne "${green}${new_val}${reset}"
+      changed=1
     fi
   }
 
@@ -248,7 +250,12 @@ function highlight_diff() {
   color_part "$old_M" "$new_M"
   echo -ne "${dim}:${reset}"
   color_part "$old_S" "$new_S"
-  echo -e " (new)"
+
+  if [[ "$changed" -eq 1 ]]; then
+    echo -e " ${green}(new)${reset}"
+  else
+    echo -e " ${dim}(new)${reset}"
+  fi
 }
 
 main "$@"
