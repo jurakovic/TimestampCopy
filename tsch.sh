@@ -65,9 +65,10 @@ function __pause() {
 }
 
 function install() {
+  echo "Adding keys..."
   install_internal "$fRootKey"
   install_internal "$dRootKey"
-  echo "Install done"
+  echo "Done"
 }
 
 function install_internal() {
@@ -83,32 +84,32 @@ function install_internal() {
 }
 
 function add_menu_root() {
-  reg.exe add "$1" -v MUIVerb -d "$2" -f
-  reg.exe add "$1" -v SubCommands -d "" -f
-  reg.exe add "$1" -v Icon -d "$3" -f
+  reg.exe add "$1" -v MUIVerb -d "$2" -f > /dev/null 2>&1
+  reg.exe add "$1" -v SubCommands -d "" -f > /dev/null 2>&1
+  reg.exe add "$1" -v Icon -d "$3" -f > /dev/null 2>&1
 }
 
 function add_menu_item() {
   # key, label, arg
-  reg.exe add "$1" -ve -d "$2" -f
-  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\"" -f
+  reg.exe add "$1" -ve -d "$2" -f > /dev/null 2>&1
+  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\"" -f > /dev/null 2>&1
 }
 
 function add_item_sep() {
-  reg.exe add "$1" -v CommandFlags -t REG_DWORD -d 0x40 -f # separator
+  reg.exe add "$1" -v CommandFlags -t REG_DWORD -d 0x40 -f > /dev/null 2>&1 # separator
 }
 
 function uninstall() {
+  echo "Deleting keys..."
   uninstall_internal "$fRootKey"
   uninstall_internal "$dRootKey"
   rm -f "$clip_file"
-  echo "Uninstall done"
+  echo "Done"
 }
 
 function uninstall_internal() {
   if reg.exe query "$1" > /dev/null 2>&1; then
     echo "y" | reg.exe delete "$1" > /dev/null 2>&1
-    echo "deleted $fRootKey"
   fi
 }
 
