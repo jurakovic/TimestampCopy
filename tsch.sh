@@ -23,7 +23,7 @@ function main() {
   elif [ "$#" -eq 2 ] # context menu commands
   then
     $1 "$2"
-    __pause
+    read -p "Press any key to exit..." -n1 -s; echo
   else
     show_menu
   fi
@@ -47,7 +47,7 @@ function show_menu() {
   __perform_action $option
   if [ $option != "q" ] # else "quit"
   then
-    __pause
+    read -p "Press any key to continue..." -n1 -s; echo
     show_menu
   fi
 }
@@ -59,10 +59,6 @@ function __perform_action() {
     "q") ;; # do nothing, will quit
     *)   echo "unknown option: $1" ;;
   esac
-}
-
-function __pause() {
-  read -p "Press any key to continue..." -n1 -s; echo
 }
 
 function install() {
