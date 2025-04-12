@@ -220,11 +220,35 @@ function highlight_diff() {
 
   echo -e "$label ${dim}${old} (old)$reset"
 
-  if [[ "$old" != "$new" ]]; then
-    echo -e "$label ${green}${new} (new)$reset"
-  else
-    echo -e "$label ${dim}${new} (new)$reset"
-  fi
+  echo -n "$label "
+  
+  IFS='- :'
+  read -r old_y old_m old_d old_H old_M old_S <<< "$old"
+  read -r new_y new_m new_d new_H new_M new_S <<< "$new"
+  unset IFS
+
+  color_part() {
+    local old_val="$1"
+    local new_val="$2"
+    if [[ "$old_val" == "$new_val" ]]; then
+      echo -ne "${dim}${new_val}${reset}"
+    else
+      echo -ne "${green}${new_val}${reset}"
+    fi
+  }
+
+  color_part "$old_y" "$new_y"
+  echo -ne "${dim}-${reset}"
+  color_part "$old_m" "$new_m"
+  echo -ne "${dim}-${reset}"
+  color_part "$old_d" "$new_d"
+  echo -n " "
+  color_part "$old_H" "$new_H"
+  echo -ne "${dim}:${reset}"
+  color_part "$old_M" "$new_M"
+  echo -ne "${dim}:${reset}"
+  color_part "$old_S" "$new_S"
+  echo -e " (new)"
 }
 
 main "$@"
