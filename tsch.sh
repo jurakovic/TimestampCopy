@@ -6,8 +6,8 @@ version="0.1.0"
 bashPath="C:\Program Files\Git\usr\bin\bash.exe"
 scriptPath="$(cygpath -w "$(pwd)")\tsch.sh"
 iconPath="$(cygpath -w "$(pwd)")\tsch.ico"
-fRootKey='HKEY_CLASSES_ROOT\*\shell\TimestampChanger'
-dRootKey='HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger'
+fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampChanger"
+dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger"
 clip_file="$HOME/.tsch"
 datetime_format="yyyy-MM-dd HH:mm:ss"
 
@@ -79,8 +79,8 @@ function install_internal() {
   add_menu_root "$1" "Timestamp Changer" "$iconPath"
   add_menu_item "$itemPath\\010CopyDateCreatedModified" "Copy" "copy"
   add_menu_item "$itemPath\\020PasteDateCreatedModified" "Paste" "paste"
-  add_menu_item "$itemPath\\030PasteDateCreated" "Paste 'Date created'" "pastedc"
-  add_menu_item "$itemPath\\040PasteDateModified" "Paste 'Date modified'" "pastedm"
+  add_menu_item "$itemPath\\030PasteDateCreated" "Paste 'Date Created'" "pastedc"
+  add_menu_item "$itemPath\\040PasteDateModified" "Paste 'Date Modified'" "pastedm"
 }
 
 function add_menu_root() {
@@ -114,12 +114,14 @@ function uninstall_internal() {
 function copy {
   dc="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
   dm="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
-  echo "File:         $1"
-  echo "DateCreated:  $dc"
-  echo "DateModified: $dm"
+  echo "File/Folder:   $1"
+  echo "---"
+  echo "Date Created:  $dc"
+  echo "Date Modified: $dm"
 
   echo "$dc" >  "$clip_file"
   echo "$dm" >> "$clip_file"
+  echo "---"
   echo "Timestamps copied"
 }
 
@@ -129,13 +131,13 @@ function pastedc {
   dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
-  echo "File:         $1"
+  echo "File/Folder:   $1"
   echo "---"
-  highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  highlight_diff "Date Created: " "$dc_old" "$dc_new"
   echo "---"
-  highlight_diff "DateModified:" "$dm_old" "$dm_old"
+  highlight_diff "Date Modified:" "$dm_old" "$dm_old"
   echo "---"
-  read -p "Apply changes? (y/n) " yn
+  read -p "Apply changes? (y/N) " yn
   if [ "${yn,,}" = "y" ]
   then
     powershell.exe -Command "(Get-Item '$1').CreationTime=[datetime]::ParseExact('$dc_new', '$datetime_format', \$null)"
@@ -151,13 +153,13 @@ function pastedm {
   dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
-  echo "File:         $1"
+  echo "File/Folder:   $1"
   echo "---"
-  highlight_diff "DateCreated: " "$dc_old" "$dc_old"
+  highlight_diff "Date Created: " "$dc_old" "$dc_old"
   echo "---"
-  highlight_diff "DateModified:" "$dm_old" "$dm_new"
+  highlight_diff "Date Modified:" "$dm_old" "$dm_new"
   echo "---"
-  read -p "Apply changes? (y/n) " yn
+  read -p "Apply changes? (y/N) " yn
   if [ "${yn,,}" = "y" ]
   then
     powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', '$datetime_format', \$null)"
@@ -173,13 +175,13 @@ function paste {
   dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
   dc_new=$(sed -n '1p' "$clip_file")
   dm_new=$(sed -n '2p' "$clip_file")
-  echo "File:         $1"
+  echo "File/Folder:   $1"
   echo "---"
-  highlight_diff "DateCreated: " "$dc_old" "$dc_new"
+  highlight_diff "Date Created: " "$dc_old" "$dc_new"
   echo "---"
-  highlight_diff "DateModified:" "$dm_old" "$dm_new"
+  highlight_diff "Date Modified:" "$dm_old" "$dm_new"
   echo "---"
-  read -p "Apply changes? (y/n) " yn
+  read -p "Apply changes? (y/N) " yn
   if [ "${yn,,}" = "y" ]
   then
     powershell.exe -Command "(Get-Item '$1').CreationTime=[datetime]::ParseExact('$dc_new', '$datetime_format', \$null)"
