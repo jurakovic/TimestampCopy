@@ -11,14 +11,6 @@ This solution is especially useful when you need to preserve or replicate Date C
 
 Adds convenient right-click options for both files and folders:
 
-<!--
-`🕗 Timestamp Changer`  
-&nbsp; &nbsp; `Copy`  
-&nbsp; &nbsp; `Paste`  
-&nbsp; &nbsp; `Paste 'Date Created'`  
-&nbsp; &nbsp; `Paste 'Date Modified'`  
--->
-
 ![ContextMenu](img/1contextmenu.png)
 
 #### Copy Mode
@@ -41,16 +33,17 @@ This saves the timestamps to a temporary location ("clipboard").
 Right-click on another file or folder and choose:
 
 `Paste` – to apply both timestamps  
-`Paste 'Date Created'` – to apply only the creation date  
-`Paste 'Date Modified'` – to apply only the modified date  
+`Paste 'Date Created'` – to apply only the Date Created  
+`Paste 'Date Modified'` – to apply only the Date Modified  
 
-Each entry starts Bash terminal and runs the `tsch.sh` script with the appropriate parameters (example screenshots below).
+Each entry starts Bash terminal and runs the [`tsch.sh`](tsch.sh) script with the appropriate parameters (example screenshots below).
 
 ### Requirements
 
-Windows 10/11 (Tested only on Windows 11 24H2)  
-PowerShell 5.1 or later  
-Bash  
+- Windows 10/11 (tested on Windows 11 24H2)  
+- PowerShell 5.1 or later  
+- Bash (recommended: Git for Windows)  
+- Administrator privileges (required for installation)
 
 > **Bash on Windows** can be installed in several ways, including:
 > - [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
@@ -59,20 +52,20 @@ Bash
 > - [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
 >  
 > The recommended way is to use **Git for Windows** (MSYS2) as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
-> This repository is designed to work with the  Git for Windows (MSYS2). It works with the official MSYS2 runtime too, but it doesnt't work with Cygwin or WSL. It could work with some minor modifications, but I don't plan to do it.  
+> This script is designed to work with Git for Windows and the official MSYS2 runtime. It doesn't work with Cygwin or WSL. It could work with some minor modifications, and while I don't plan to do it myself, feel free to update it to suit your own needs.  
 
 ### Installation
 
-1. Clone or download the repository to your local machine.
+1. Clone the repository.
 	```bash
 	git clone https://github.com/jurakovic/timestamp-changer.git
 	```
-2. Open a Bash terminal with admin privileges.
-3. Navigate to the directory where you cloned or downloaded the repository.
+2. Open an elevated Bash terminal ('Run as Administrator').
+3. Navigate to the directory where you cloned the repository.
 	```bash
 	cd timestamp-changer
 	```
-4. Add the context menu entries. It can be done in two ways.  
+4. Add the context menu entries. This can be done in two ways.  
 	Run the `tsch.sh` script
 	```bash
 	./tsch.sh
@@ -113,7 +106,12 @@ This script is designed to work with **only one selected file or folder at a tim
 ### Disclaimer
 
 This script is provided **as-is**, without any warranties or guarantees of fitness for a particular purpose. It was created solely for educational and experimental use, and I do **not** intend to actively support or maintain it. While it should work reliably in most cases, use it at your own risk.  
+
+### Future Plans
+
 In the future, I plan to develop a more robust and user-friendly version written entirely in PowerShell for a more native Windows experience.
+
+---
 
 ### References
 
