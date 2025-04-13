@@ -62,6 +62,12 @@ function __perform_action() {
 }
 
 function install() {
+  net session 1>/dev/null 2>/dev/null
+  if [ ! $? -eq 0 ]; then
+    read -p "Not running as Admin. Press any key to exit..." -n1 -s; echo
+    exit 1
+  fi
+
   echo "Installing..."
   install_internal "$fRootKey"
   install_internal "$dRootKey"
