@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##### constants
-homepage="https://github.com/jurakovic/tscp"
+homepage="https://github.com/jurakovic/timestamp-copy"
 version="1.0.0"
 bashPath="C:\Program Files\Git\usr\bin\bash.exe"
 scriptPath="$(cygpath -w "$(pwd)")\tscp.sh"

@@ -58,12 +58,12 @@ Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with th
 
 1. Clone the repository.
 	```bash
-	git clone https://github.com/jurakovic/tscp.git
+	git clone https://github.com/jurakovic/timestamp-copy.git
 	```
 2. Open an elevated Bash terminal ('Run as Administrator').
 3. Navigate to the directory where you cloned the repository.
 	```bash
-	cd tscp
+	cd timestamp-copy
 	```
 4. Add the context menu entries. This can be done in two ways.  
 	Run the `tscp.sh` script
