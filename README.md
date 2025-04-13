@@ -1,9 +1,9 @@
 ﻿
 # Timestamp Changer
 
-Timestamps Changer is a lightweight Bash and PowerShell-based utility that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
+Timestamps Changer is a lightweight Bash and PowerShell-based script that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
 
-This tool is especially useful when you need to preserve or replicate Date Created and Date Modified values across files or folders – ideal for organizing backups, restoring files, or syncing metadata.
+This solution is especially useful when you need to preserve or replicate Date Created and Date Modified values across files or folders – ideal for organizing backups, restoring files, or syncing metadata.
 
 ### Features
 
@@ -105,6 +105,10 @@ Paste (confirmation)
 
 Paste (done)  
 ![Copy](img/4pastedone.png)
+
+### Limitation
+
+This script is designed to work with **only one selected file or folder at a time**. While it does appear in the context menu when multiple items are selected, it will be executed **independently for each item**. This can lead to unexpected behavior. For accurate and predictable results, always use it with a single selection.
 
 ### References
 
