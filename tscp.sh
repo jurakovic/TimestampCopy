@@ -1,14 +1,14 @@
 #!/bin/bash
 
 ##### constants
-homepage="https://github.com/jurakovic/timestamp-changer"
+homepage="https://github.com/jurakovic/tscp"
 version="1.0.0"
 bashPath="C:\Program Files\Git\usr\bin\bash.exe"
-scriptPath="$(cygpath -w "$(pwd)")\tsch.sh"
-iconPath="$(cygpath -w "$(pwd)")\tsch.ico"
-fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampChanger"
-dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampChanger"
-clip_file="$HOME/.tsch"
+scriptPath="$(cygpath -w "$(pwd)")\tscp.sh"
+iconPath="$(cygpath -w "$(pwd)")\tscp.ico"
+fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
+dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
+clip_file="$HOME/.tscp"
 datetime_format="yyyy-MM-dd HH:mm:ss"
 
 function main() {
@@ -35,7 +35,7 @@ function show_menu() {
   set +e
   clear
   echo
-  echo -e "Timestamp Changer ($version)"
+  echo -e "Timestamp Copy ($version)"
   echo "                            "
   echo "  [i] Install               "
   echo "  [u] Uninstall             "
@@ -76,7 +76,7 @@ function install() {
 
 function install_internal() {
   itemPath="$1\\shell"
-  add_menu_root "$1" "Timestamp Changer" "$iconPath"
+  add_menu_root "$1" "Timestamp Copy" "$iconPath"
   add_menu_item "$itemPath\\010CopyDateCreatedModified" "Copy" "copy"
   add_menu_item "$itemPath\\020PasteDateCreatedModified" "Paste" "paste"
   add_menu_item "$itemPath\\030PasteDateCreated" "Paste 'Date Created'" "pastedc"

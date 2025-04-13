@@ -1,7 +1,7 @@
 ﻿
-# Timestamp Changer
+# Timestamp Copy
 
-Timestamps Changer is a lightweight Bash and PowerShell-based script that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
+Timestamps Copy is a lightweight Bash and PowerShell-based script that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
 
 This solution is especially useful when you need to preserve or replicate Date Created and Date Modified values across files or folders – ideal for organizing backups, restoring files, or syncing metadata.
 
@@ -36,7 +36,7 @@ Right-click on another file or folder and choose:
 `Paste 'Date Created'` – to apply only the Date Created  
 `Paste 'Date Modified'` – to apply only the Date Modified  
 
-Each entry starts Bash terminal and runs the [`tsch.sh`](tsch.sh) script with the appropriate parameters (example screenshots below).
+Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with the appropriate parameters (example screenshots below).
 
 ### Requirements
 
@@ -58,22 +58,22 @@ Each entry starts Bash terminal and runs the [`tsch.sh`](tsch.sh) script with th
 
 1. Clone the repository.
 	```bash
-	git clone https://github.com/jurakovic/timestamp-changer.git
+	git clone https://github.com/jurakovic/tscp.git
 	```
 2. Open an elevated Bash terminal ('Run as Administrator').
 3. Navigate to the directory where you cloned the repository.
 	```bash
-	cd timestamp-changer
+	cd tscp
 	```
 4. Add the context menu entries. This can be done in two ways.  
-	Run the `tsch.sh` script
+	Run the `tscp.sh` script
 	```bash
-	./tsch.sh
+	./tscp.sh
 	```
 
 	and then choose the option `i`
 	```text
-	Timestamp Changer (1.0.0)
+	Timestamp Copy (1.0.0)
 
 	[i] Install
 	[u] Uninstall
@@ -85,7 +85,7 @@ Each entry starts Bash terminal and runs the [`tsch.sh`](tsch.sh) script with th
 
 	or run the script with the `-i` option to install it directly:
 	```bash
-	./tsch.sh -i
+	./tscp.sh -i
 	```
 
 ### Screenshots
