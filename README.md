@@ -11,11 +11,15 @@ This tool is especially useful when you need to preserve or replicate Date Creat
 
 Adds convenient right-click options for both files and folders:
 
+<!--
 `🕗 Timestamp Changer`  
 &nbsp; &nbsp; `Copy`  
 &nbsp; &nbsp; `Paste`  
 &nbsp; &nbsp; `Paste 'Date Created'`  
 &nbsp; &nbsp; `Paste 'Date Modified'`  
+-->
+
+![ContextMenu](img/1contextmenu.png)
 
 #### Copy Mode
 
@@ -40,23 +44,22 @@ Right-click on another file or folder and choose:
 `Paste 'Date Created'` – to apply only the creation date  
 `Paste 'Date Modified'` – to apply only the modified date  
 
+Each entry starts Bash terminal and runs the `tsch.sh` script with the appropriate parameters (example screenshots below).
+
 ### Requirements
 
 Windows 10/11 (Tested only on Windows 11 24H2)  
 PowerShell 5.1 or later  
 Bash  
 
-#### Bash on Windows
-
-Bash on Windows can be installed in several ways, including:
-- [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
-- [MSYS2](https://www.msys2.org)
-- [Cygwin](https://cygwin.com)
-- [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
-
+> **Bash on Windows** can be installed in several ways, including:
+> - [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
+> - [MSYS2](https://www.msys2.org)
+> - [Cygwin](https://cygwin.com)
+> - [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
+>  
 > The recommended way is to use **Git for Windows** (MSYS2) as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
-> This repository is designed to work with the MSYS2 runtime that comes with Git for Windows.  
-> It works with the official MSYS2 runtime too, but it doesnt't work with Cygwin or WSL. It could work with some minor modifications, but I don't have the time to do it.  
+> This repository is designed to work with the  Git for Windows (MSYS2). It works with the official MSYS2 runtime too, but it doesnt't work with Cygwin or WSL. It could work with some minor modifications, but I don't plan to do it.  
 
 ### Installation
 
@@ -94,6 +97,14 @@ Bash on Windows can be installed in several ways, including:
 
 ### Screenshots
 
+Copy  
+![Copy](img/2copy.png)
+
+Paste (confirmation)  
+![Copy](img/3paste.png)
+
+Paste (done)  
+![Copy](img/4pastedone.png)
 
 ### References
 
