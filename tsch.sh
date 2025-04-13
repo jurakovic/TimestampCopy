@@ -73,11 +73,8 @@ function install_internal() {
   add_menu_root "$1" "Timestamp Changer" "$iconPath"
   add_menu_item "$itemPath\\010CopyDateCreatedModified" "Copy" "copy"
   add_menu_item "$itemPath\\020PasteDateCreatedModified" "Paste" "paste"
-  add_menu_item "$itemPath\\030PasteDateCreated" "Paste \"Date created\"" "pastedc"
-  add_menu_item "$itemPath\\040PasteDateModified" "Paste \"Date modified\"" "pastedm"
-  #add_item_sep  "$itemPath\\040PasteDateModified"
-  #add_menu_item "$itemPath\\050Backup" "Backup" "backup"
-  #add_menu_item "$itemPath\\060Restore" "Restore" "restore"
+  add_menu_item "$itemPath\\030PasteDateCreated" "Paste 'Date created'" "pastedc"
+  add_menu_item "$itemPath\\040PasteDateModified" "Paste 'Date modified'" "pastedm"
 }
 
 function add_menu_root() {
@@ -90,10 +87,6 @@ function add_menu_item() {
   # key, label, arg
   reg.exe add "$1" -ve -d "$2" -f > /dev/null 2>&1
   reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\"" -f > /dev/null 2>&1
-}
-
-function add_item_sep() {
-  reg.exe add "$1" -v CommandFlags -t REG_DWORD -d 0x40 -f > /dev/null 2>&1 # separator
 }
 
 function uninstall() {
