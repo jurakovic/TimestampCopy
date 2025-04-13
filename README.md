@@ -110,6 +110,11 @@ Paste (done)
 
 This script is designed to work with **only one selected file or folder at a time**. While it does appear in the context menu when multiple items are selected, it will be executed **independently for each item**. This can lead to unexpected behavior. For accurate and predictable results, always use it with a single selection.
 
+### Disclaimer
+
+This script is provided **as-is**, without any warranties or guarantees of fitness for a particular purpose. It was created solely for educational and experimental use, and I do **not** intend to actively support or maintain it. While it should work reliably in most cases, use it at your own risk.  
+In the future, I plan to develop a more robust and user-friendly version written entirely in PowerShell for a more native Windows experience.
+
 ### References
 
 <https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders>  
