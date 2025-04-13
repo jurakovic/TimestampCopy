@@ -80,7 +80,7 @@ Bash
 
 	and then choose the option `i`
 	```text
-	Timestamp Changer (0.1.0)
+	Timestamp Changer (1.0.0)
 
 	[i] Install
 	[u] Uninstall

@@ -2,7 +2,7 @@
 
 ##### constants
 homepage="https://github.com/jurakovic/timestamp-changer"
-version="0.1.0"
+version="1.0.0"
 bashPath="C:\Program Files\Git\usr\bin\bash.exe"
 scriptPath="$(cygpath -w "$(pwd)")\tsch.sh"
 iconPath="$(cygpath -w "$(pwd)")\tsch.ico"
