@@ -36,21 +36,64 @@ This saves the timestamps to a temporary location ("clipboard").
 
 Right-click on another file or folder and choose:
 
-`Paste` – to apply both timestamps
-
-`Paste 'Date Created'` – to apply only the creation date
-
-`Paste 'Date Modified'` – to apply only the modified date
+`Paste` – to apply both timestamps  
+`Paste 'Date Created'` – to apply only the creation date  
+`Paste 'Date Modified'` – to apply only the modified date  
 
 ### Requirements
 
-Windows 10/11
+Windows 10/11 (Tested only on Windows 11 24H2)  
+PowerShell 5.1 or later  
+Bash  
 
-PowerShell 5.1 or later
+#### Bash on Windows
 
-Admin privileges for initial context menu setup
+Bash on Windows can be installed in several ways, including:
+- [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
+- [MSYS2](https://www.msys2.org)
+- [Cygwin](https://cygwin.com)
+- [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
+
+> The recommended way is to use **Git for Windows** (MSYS2) as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
+> This repository is designed to work with the MSYS2 runtime that comes with Git for Windows.  
+> It works with the official MSYS2 runtime too, but it doesnt't work with Cygwin or WSL. It could work with some minor modifications, but I don't have the time to do it.  
 
 ### Installation
+
+1. Clone or download the repository to your local machine.
+	```bash
+	git clone https://github.com/jurakovic/timestamp-changer.git
+	```
+2. Open a Bash terminal with admin privileges.
+3. Navigate to the directory where you cloned or downloaded the repository.
+	```bash
+	cd timestamp-changer
+	```
+4. Add the context menu entries. It can be done in two ways.  
+	Run the `tsch.sh` script
+	```bash
+	./tsch.sh
+	```
+
+	and then choose the option `i`
+	```text
+	Timestamp Changer (0.1.0)
+
+	[i] Install
+	[u] Uninstall
+
+	[q] Quit
+
+	Choose option:
+	```
+
+	or run the script with the `-i` option to install it directly:
+	```bash
+	./tsch.sh -i
+	```
+
+### Screenshots
+
 
 ### References
 
