@@ -1,7 +1,6 @@
 
-Write-Host "You passed $($args.Count) arguments:"
-$args | Write-Host
-
+#Write-Host "You passed $($args.Count) arguments:"
+#$args | Write-Host
 #Write-Host $args.GetType()
 
 ##### constants
@@ -10,8 +9,8 @@ $version = "1.1.0"
 $psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
-$fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
-$dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
+$fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
+$dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $clip_file = "$HOME\.tscp"
 $datetime_format = "yyyy-MM-dd HH:mm:ss"
 
@@ -42,7 +41,7 @@ function __perform_action() {
     )
 
     switch ($option) {
-        "i" { echo "install" }
+        "i" { install }
         "u" { echo "uninstall" }
         "q" { return }
         default { echo "unknown option: $option" }
@@ -57,41 +56,68 @@ function __pause() {
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
 }
 
-<#
 function install() {
-  net session 1>/dev/null 2>/dev/null
-  if [ ! $? -eq 0 ]; then
-    read -p "Not running as Admin. Press any key to exit..." -n1 -s; echo
-    exit 1
-  fi
+    net session *> $null
+    if ($? -ne $True) {
+        echo "Not running as Admin"
+        __pause "exit"
+        exit 1
+    }
 
-  echo "Installing..."
-  install_internal "$fRootKey"
-  install_internal "$dRootKey"
-  echo "Done"
+    echo "Installing..."
+    install_internal "$fRootKey"
+    install_internal "$dRootKey"
+    echo "Done"
 }
 
 function install_internal() {
-  itemPath="$1\\shell"
-  add_menu_root "$1" "Timestamp Copy" "$iconPath"
-  add_menu_item "$itemPath\\010CopyDateCreatedModified" "Copy" "copy"
-  add_menu_item "$itemPath\\020PasteDateCreatedModified" "Paste" "paste"
-  add_menu_item "$itemPath\\030PasteDateCreated" "Paste 'Date Created'" "pastedc"
-  add_menu_item "$itemPath\\040PasteDateModified" "Paste 'Date Modified'" "pastedm"
+    param (
+        [string]$rootKey
+    )
+
+    $itemPath = "$rootKey\shell"
+    add_menu_root "$rootKey" "Timestamp Copy" "$iconPath"
+    add_menu_item "$itemPath\010CopyDateCreatedModified" "Copy" "copy"
+    add_menu_item "$itemPath\020PasteDateCreatedModified" "Paste" "paste"
+    add_menu_item "$itemPath\030PasteDateCreated" "Paste 'Date Created'" "pastedc"
+    add_menu_item "$itemPath\040PasteDateModified" "Paste 'Date Modified'" "pastedm"
 }
 
 function add_menu_root() {
-  reg.exe add "$1" -v MUIVerb -d "$2" -f > /dev/null 2>&1
-  reg.exe add "$1" -v SubCommands -d "" -f > /dev/null 2>&1
-  reg.exe add "$1" -v Icon -d "$3" -f > /dev/null 2>&1
+    param (
+        [string]$key,
+        [string]$label,
+        [string]$icon
+    )
+
+    #Write-Output "$key"
+    #Write-Output "$label"
+    #Write-Output "$icon"
+
+    reg.exe add "$key" /v MUIVerb /d "$label" /f | Out-Null
+    reg.exe add "$key" /v SubCommands /f | Out-Null
+    reg.exe add "$key" /v Icon /d "$icon" /f | Out-Null
 }
 
 function add_menu_item() {
-  # key, label, arg
-  reg.exe add "$1" -ve -d "$2" -f > /dev/null 2>&1
-  reg.exe add "$1\\command" -ve -d "\"$bashPath\" --login -i \"$scriptPath\" \"$3\" \"%1\"" -f > /dev/null 2>&1
+    param (
+        [string]$key,
+        [string]$label,
+        [string]$arg
+    )
+
+    #Write-Output "$key"
+    #Write-Output "$label"
+    #Write-Output "$arg"
+    #Write-Output "$psPath"
+    #Write-Output "$scriptPath"
+    #Write-Output """$psPath"" ""$scriptPath"" ""$arg"" ""%1"""
+
+    reg.exe add "$key" /ve /d "$label" /f | Out-Null
+    reg.exe add "$key\command" /ve /d """$psPath"" ""$scriptPath"" ""$arg"" ""%1""" /f | Out-Null
 }
 
+<#
 function uninstall() {
   echo "Uninstalling..."
   uninstall_internal "$fRootKey"
@@ -284,6 +310,9 @@ main "$@"
 if ($args.Count -eq 1) { # cli arguments
     if ($args[0] -in @("-v", "--version")) {
         Write-Output $version
+    }
+    elseif ($args[0] -in @("-i", "--install")) {
+        install
     }
 } elseif ($args.Count -eq 2) { # context menu commands
     Write-Output "$args.Count -eq 2"
