@@ -15,39 +15,49 @@ $dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $clip_file = "$HOME\.tscp"
 $datetime_format = "yyyy-MM-dd HH:mm:ss"
 
-<#
 ##### install/uninstall functions
 
 function show_menu() {
-  set +e
-  clear
-  echo
-  echo -e "Timestamp Copy ($version)"
-  echo "                            "
-  echo "  [i] Install               "
-  echo "  [u] Uninstall             "
-  echo "                            "
-  echo "  [q] Quit                  "
-  echo
-  read -p "Choose option: " option
-  clear
-  __perform_action $option
-  if [ $option != "q" ] # else "quit"
-  then
-    read -p "Press any key to continue..." -n1 -s; echo
-    show_menu
-  fi
+    clear
+    echo ""
+    echo "  Timestamp Copy ($version)"
+    echo "                            "
+    echo "  [i] Install               "
+    echo "  [u] Uninstall             "
+    echo "                            "
+    echo "  [q] Quit                  "
+    echo ""
+    $option = Read-Host "Choose option"
+    clear
+    __perform_action $option
+    if ($option -ne "q") {
+        __pause "continue"
+        show_menu
+    }
 }
 
 function __perform_action() {
-  case $1 in
-    "i") install ;;
-    "u") uninstall ;;
-    "q") ;; # do nothing, will quit
-    *)   echo "unknown option: $1" ;;
-  esac
+    param (
+        [string]$option
+    )
+
+    switch ($option) {
+        "i" { echo "install" }
+        "u" { echo "uninstall" }
+        "q" { return }
+        default { echo "unknown option: $option" }
+    }
 }
 
+function __pause() {
+    param (
+        [string]$option="exit"
+    )
+    Write-Host -NoNewLine "Press any key to $option...";
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+}
+
+<#
 function install() {
   net session 1>/dev/null 2>/dev/null
   if [ ! $? -eq 0 ]; then
@@ -271,14 +281,14 @@ main "$@"
 
 # Main
 
-if ($args.Count -eq 1) {
+if ($args.Count -eq 1) { # cli arguments
     if ($args[0] -in @("-v", "--version")) {
         Write-Output $version
     }
-} elseif ($args.Count -eq 2) {
+} elseif ($args.Count -eq 2) { # context menu commands
     Write-Output "$args.Count -eq 2"
     #Invoke-Expression "$($args[0]) $($args[1])"
-    #Read-Host "Press any key to exit..."
+    __pause
 } else {
-    Write-Output "else"
+    show_menu
 }
