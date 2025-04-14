@@ -1,3 +1,4 @@
+<#
 #!/bin/bash
 
 ##### constants
@@ -261,3 +262,4 @@ function highlight_diff() {
 }
 
 main "$@"
+#>
