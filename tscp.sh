@@ -18,7 +18,7 @@ function main() {
       -i|--install) install ;;
       -u|--uninstall) uninstall ;;
       -v|--version) echo "$version" ;;
-      -h|--help) echo "For help visit $homepage" ;;
+      -h|--help|-?) echo "For help visit $homepage" ;;
     esac
   elif [ "$#" -eq 2 ] # context menu commands
   then
