@@ -4,25 +4,7 @@ $args | Write-Host
 
 #Write-Host $args.GetType()
 
-$version="0.1.0"
-
-if ($args.Count -eq 1) {
-    if ($args[0] -in @("-v", "--version")) {
-        Write-Output $version
-    }
-} elseif ($args.Count -eq 2) {
-    Write-Output "$args.Count -eq 2"
-    #Invoke-Expression "$($args[0]) $($args[1])"
-    #Read-Host "Press any key to exit..."
-} else {
-    Write-Output "else"
-}
-
-
-
 <#
-#!/bin/bash
-
 ##### constants
 homepage="https://github.com/jurakovic/timestamp-copy"
 version="1.0.0"
@@ -33,24 +15,6 @@ fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 clip_file="$HOME/.tscp"
 datetime_format="yyyy-MM-dd HH:mm:ss"
-
-function main() {
-  if [ "$#" -eq 1 ] # cli arguments
-  then
-    case $1 in
-      -i|--install) install ;;
-      -u|--uninstall) uninstall ;;
-      -v|--version) echo "$version" ;;
-      -h|--help|-?) echo "For help visit $homepage" ;;
-    esac
-  elif [ "$#" -eq 2 ] # context menu commands
-  then
-    $1 "$2"
-    read -p "Press any key to exit..." -n1 -s; echo
-  else
-    show_menu
-  fi
-}
 
 ##### install/uninstall functions
 
@@ -283,5 +247,40 @@ function highlight_diff() {
   fi
 }
 
+
+function main() {
+  if [ "$#" -eq 1 ] # cli arguments
+  then
+    case $1 in
+      -i|--install) install ;;
+      -u|--uninstall) uninstall ;;
+      -v|--version) echo "$version" ;;
+      -h|--help|-?) echo "For help visit $homepage" ;;
+    esac
+  elif [ "$#" -eq 2 ] # context menu commands
+  then
+    $1 "$2"
+    read -p "Press any key to exit..." -n1 -s; echo
+  else
+    show_menu
+  fi
+}
+
 main "$@"
 #>
+
+# Main
+
+$version="0.1.0"
+
+if ($args.Count -eq 1) {
+    if ($args[0] -in @("-v", "--version")) {
+        Write-Output $version
+    }
+} elseif ($args.Count -eq 2) {
+    Write-Output "$args.Count -eq 2"
+    #Invoke-Expression "$($args[0]) $($args[1])"
+    #Read-Host "Press any key to exit..."
+} else {
+    Write-Output "else"
+}
