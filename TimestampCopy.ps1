@@ -4,18 +4,18 @@ $args | Write-Host
 
 #Write-Host $args.GetType()
 
-<#
 ##### constants
-homepage="https://github.com/jurakovic/timestamp-copy"
-version="1.0.0"
-bashPath="C:\Program Files\Git\usr\bin\bash.exe"
-scriptPath="$(cygpath -w "$(pwd)")\tscp.sh"
-iconPath="$(cygpath -w "$(pwd)")\tscp.ico"
-fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
-dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
-clip_file="$HOME/.tscp"
-datetime_format="yyyy-MM-dd HH:mm:ss"
+$homepage = "https://github.com/jurakovic/timestamp-copy"
+$version = "1.1.0"
+$psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+$scriptPath = "$PSCommandPath"
+$iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
+$fRootKey="HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
+$dRootKey="HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
+$clip_file = "$HOME\.tscp"
+$datetime_format = "yyyy-MM-dd HH:mm:ss"
 
+<#
 ##### install/uninstall functions
 
 function show_menu() {
@@ -270,8 +270,6 @@ main "$@"
 #>
 
 # Main
-
-$version="0.1.0"
 
 if ($args.Count -eq 1) {
     if ($args[0] -in @("-v", "--version")) {
