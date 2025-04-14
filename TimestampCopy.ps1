@@ -1,3 +1,25 @@
+
+Write-Host "You passed $($args.Count) arguments:"
+$args | Write-Host
+
+#Write-Host $args.GetType()
+
+$version="0.1.0"
+
+if ($args.Count -eq 1) {
+    if ($args[0] -in @("-v", "--version")) {
+        Write-Output $version
+    }
+} elseif ($args.Count -eq 2) {
+    Write-Output "$args.Count -eq 2"
+    #Invoke-Expression "$($args[0]) $($args[1])"
+    #Read-Host "Press any key to exit..."
+} else {
+    Write-Output "else"
+}
+
+
+
 <#
 #!/bin/bash
 
