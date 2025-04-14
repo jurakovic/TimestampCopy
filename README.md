@@ -11,7 +11,7 @@ This solution is especially useful when you need to preserve or replicate Date C
 
 Adds convenient right-click options for both files and folders:
 
-![ContextMenu](img/1contextmenu.png)
+![ContextMenu](img/contextmenu.png)
 
 #### Copy Mode
 
@@ -45,13 +45,13 @@ Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with th
 - Bash (recommended: Git for Windows)  
 - Administrator privileges (required for installation)
 
-> **Bash on Windows** can be installed in several ways, including:
+> **Bash** can be installed on Windows in several ways, including:
 > - [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
 > - [MSYS2](https://www.msys2.org)
 > - [Cygwin](https://cygwin.com)
 > - [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
->  
-> The recommended way is to use **Git for Windows** (MSYS2) as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
+>
+> The recommended way is to use **Git for Windows** as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
 > This script is designed to work with Git for Windows and the official MSYS2 runtime. It doesn't work with Cygwin or WSL. It could work with some minor modifications, and while I don't plan to do it myself, feel free to update it to suit your own needs.  
 
 ### Installation
@@ -91,13 +91,10 @@ Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with th
 ### Screenshots
 
 Copy  
-![Copy](img/2copy.png)
+![Copy](img/copy.png)
 
-Paste (confirmation)  
-![Copy](img/3paste.png)
-
-Paste (done)  
-![Copy](img/4pastedone.png)
+Paste  
+![Copy](img/paste.png)
 
 ### Limitation
 
