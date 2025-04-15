@@ -42,7 +42,7 @@ function __perform_action() {
 
     switch ($option) {
         "i" { install }
-        "u" { echo "uninstall" }
+        "u" { uninstall }
         "q" { return }
         default { echo "unknown option: $option" }
     }
@@ -117,21 +117,25 @@ function add_menu_item() {
     reg.exe add "$key\command" /ve /d """$psPath"" ""$scriptPath"" ""$arg"" ""%1""" /f | Out-Null
 }
 
-<#
 function uninstall() {
   echo "Uninstalling..."
   uninstall_internal "$fRootKey"
   uninstall_internal "$dRootKey"
-  rm -f "$clip_file"
+  rm -Force "$clip_file" *> $null
   echo "Done"
 }
 
 function uninstall_internal() {
-  if reg.exe query "$1" > /dev/null 2>&1; then
-    echo "y" | reg.exe delete "$1" > /dev/null 2>&1
-  fi
+    param (
+        [string]$rootKey
+    )
+
+    if (reg.exe query "$rootKey" *> $null) {
+        reg.exe delete "$rootKey" /f | Out-Null
+    }
 }
 
+<#
 ##### context menu commands (copy/paste functions)
 
 function copy {
@@ -313,6 +317,9 @@ if ($args.Count -eq 1) { # cli arguments
     }
     elseif ($args[0] -in @("-i", "--install")) {
         install
+    }
+    elseif ($args[0] -in @("-u", "--uninstall")) {
+        uninstall
     }
 } elseif ($args.Count -eq 2) { # context menu commands
     Write-Output "$args.Count -eq 2"
