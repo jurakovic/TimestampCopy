@@ -308,32 +308,10 @@ function highlight_diff() {
     }
 }
 
-<#
-function main() {
-  if [ "$#" -eq 1 ] # cli arguments
-  then
-    case $1 in
-      -i|--install) install ;;
-      -u|--uninstall) uninstall ;;
-      -v|--version) echo "$version" ;;
-      -h|--help|-?) echo "For help visit $homepage" ;;
-    esac
-  elif [ "$#" -eq 2 ] # context menu commands
-  then
-    $1 "$2"
-    read -p "Press any key to exit..." -n1 -s; echo
-  else
-    show_menu
-  fi
-}
-
-main "$@"
-#>
-
-# Main
+##### Main
 
 if ($args.Count -eq 1) { # cli arguments
-    if ($args[0] -in @("-v", "--version")) {
+    <##>if ($args[0] -in @("-v", "--version")) {
         Write-Output $version
     }
     elseif ($args[0] -in @("-i", "--install")) {
@@ -341,6 +319,9 @@ if ($args.Count -eq 1) { # cli arguments
     }
     elseif ($args[0] -in @("-u", "--uninstall")) {
         uninstall
+    }
+    elseif ($args[0] -in @("-h", "--help", "-?")) {
+        echo "For help visit $homepage"
     }
 } elseif ($args.Count -eq 2) { # context menu commands
     Invoke-Expression "$($args[0]) $($args[1])"
