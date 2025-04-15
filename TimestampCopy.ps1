@@ -1,8 +1,4 @@
 
-#Write-Host "You passed $($args.Count) arguments:"
-#$args | Write-Host
-#Write-Host $args.GetType()
-
 ##### constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
 $version = "1.1.0"
@@ -90,10 +86,6 @@ function add_menu_root() {
         [string]$icon
     )
 
-    #Write-Output "$key"
-    #Write-Output "$label"
-    #Write-Output "$icon"
-
     reg.exe add "$key" /v MUIVerb /d "$label" /f | Out-Null
     reg.exe add "$key" /v SubCommands /f | Out-Null
     reg.exe add "$key" /v Icon /d "$icon" /f | Out-Null
@@ -105,13 +97,6 @@ function add_menu_item() {
         [string]$label,
         [string]$arg
     )
-
-    #Write-Output "$key"
-    #Write-Output "$label"
-    #Write-Output "$arg"
-    #Write-Output "$psPath"
-    #Write-Output "$scriptPath"
-    #Write-Output """$psPath"" ""$scriptPath"" ""$arg"" ""%1"""
 
     reg.exe add "$key" /ve /d "$label" /f | Out-Null
     reg.exe add "$key\command" /ve /d """$psPath"" ""$scriptPath"" ""$arg"" ""%1""" /f | Out-Null
@@ -358,7 +343,6 @@ if ($args.Count -eq 1) { # cli arguments
         uninstall
     }
 } elseif ($args.Count -eq 2) { # context menu commands
-    #Write-Output "$args.Count -eq 2"
     Invoke-Expression "$($args[0]) $($args[1])"
     __pause
 } else {
