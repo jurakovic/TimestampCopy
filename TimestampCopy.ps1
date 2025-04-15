@@ -220,13 +220,13 @@ function paste {
 
     echo "File/Folder:   $filePath"
     echo "---"
-    #highlight_diff "Date Created: " "$dc_old" "$dc_new"
-    echo "Date Created:  $dc_old (old)"
-    echo "Date Created:  $dc_new (new)"
+    highlight_diff "Date Created: " "$dc_old" "$dc_new"
+    #echo "Date Created:  $dc_old (old)"
+    #echo "Date Created:  $dc_new (new)"
     echo "---"
-    #highlight_diff "Date Modified:" "$dm_old" "$dm_new"
-    echo "Date Modified: $dm_old (old)"
-    echo "Date Modified: $dm_new (new)"
+    highlight_diff "Date Modified:" "$dm_old" "$dm_new"
+    #echo "Date Modified: $dm_old (old)"
+    #echo "Date Modified: $dm_new (new)"
     echo "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
@@ -266,56 +266,57 @@ function guard() {
     }
 }
 
-<#
 function highlight_diff() {
-  local label="$1"
-  local old="$2"
-  local new="$3"
+    param (
+        [string]$label,
+        [string]$old,
+        [string]$new
+    )
 
-  local reset="\033[0m"
-  local green="\033[1;32m"
-  local changed=0
+    $reset = "`e[0m"
+    $green = "`e[1;32m"
+    $changed = $false
 
-  echo -e "$label $old (old)$reset"
+    echo "$label $old (old)$reset"
 
-  echo -n "$label "
+    echo -NoNewline "$label "
 
-  IFS='- :'
-  read -r old_y old_m old_d old_H old_M old_S <<< "$old"
-  read -r new_y new_m new_d new_H new_M new_S <<< "$new"
-  unset IFS
+    $oldParts = $old -split '[- :]'
+    $newParts = $new -split '[- :]'
 
-  color_part() {
-    local old_val="$1"
-    local new_val="$2"
-    if [[ "$old_val" == "$new_val" ]]; then
-      echo -ne "${new_val}${reset}"
-    else
-      echo -ne "${green}${new_val}${reset}"
-      changed=1
-    fi
-  }
+    function color_part {
+        param (
+            [string]$oldVal,
+            [string]$newVal
+        )
+        if ($oldVal -eq $newVal) {
+            echo -NoNewline "${newVal}${reset}"
+        } else {
+            echo -NoNewline "${green}${newVal}${reset}"
+            $script:changed = $true
+        }
+    }
 
-  color_part "$old_y" "$new_y"
-  echo -ne "-"
-  color_part "$old_m" "$new_m"
-  echo -ne "-"
-  color_part "$old_d" "$new_d"
-  echo -n " "
-  color_part "$old_H" "$new_H"
-  echo -ne ":"
-  color_part "$old_M" "$new_M"
-  echo -ne ":"
-  color_part "$old_S" "$new_S"
+    color_part $oldParts[0] $newParts[0] # y
+    echo -NoNewline "-"
+    color_part $oldParts[1] $newParts[1] # m
+    echo -NoNewline "-"
+    color_part $oldParts[2] $newParts[2] # d
+    echo -NoNewline " "
+    color_part $oldParts[3] $newParts[3] # H
+    echo -NoNewline ":"
+    color_part $oldParts[4] $newParts[4] # M
+    echo -NoNewline ":"
+    color_part $oldParts[5] $newParts[5] # S
 
-  if [[ "$changed" -eq 1 ]]; then
-    echo -e " ${green}(new)${reset}"
-  else
-    echo -e " (new)${reset}"
-  fi
+    if ($changed) {
+        echo " ${green}(new)${reset}"
+    } else {
+        echo " (new)${reset}"
+    }
 }
 
-
+<#
 function main() {
   if [ "$#" -eq 1 ] # cli arguments
   then
