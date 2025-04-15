@@ -208,7 +208,7 @@ function paste {
         [string]$filePath
     )
 
-    #guard
+    guard
 
     $timestamps = Get-Content -Path "$clip_file"
     $dc_new = $timestamps[0]
@@ -239,27 +239,34 @@ function paste {
     }
 }
 
-<#
 function guard() {
-  if ! [ -f "$clip_file" ]; then
-    echo "Timestamps clipboard empty."
-    read -p "Press any key to exit..." -n1 -s; echo
-    exit 0
-  fi
+    if (-not (Test-Path "$clip_file")) {
+        echo "Timestamps clipboard empty."
+        __pause "exit"
+        exit 0
+    }
 
-  dc=$(sed -n '1p' "$clip_file")
-  dm=$(sed -n '2p' "$clip_file")
-  powershell.exe -Command "[datetime]::ParseExact('$dc', '$datetime_format', \$null)" > /dev/null &&
-  powershell.exe -Command "[datetime]::ParseExact('$dm', '$datetime_format', \$null)" > /dev/null
+    $timestamps = Get-Content -Path "$clip_file"
+    if ($timestamps.Count -lt 2) {
+        echo "Timestamps clipboard corrupted. Copy new timestamps."
+        __pause "exit"
+        exit 0
+    }
 
-  if [ ! $? -eq 0 ];
-  then
-    echo "Timestamps clipboard corrupted. Copy new timestamps."
-    read -p "Press any key to exit..." -n1 -s; echo
-    exit 0
-  fi
+    $dc = $timestamps[0]
+    $dm = $timestamps[1]
+
+    try {
+        [datetime]::ParseExact($dc, $datetime_format, $null) | Out-Null
+        [datetime]::ParseExact($dm, $datetime_format, $null) | Out-Null
+    } catch {
+        echo "Timestamps clipboard corrupted. Copy new timestamps."
+        __pause "exit"
+        exit 0
+    }
 }
 
+<#
 function highlight_diff() {
   local label="$1"
   local old="$2"
