@@ -141,12 +141,11 @@ function copy1 {
     param (
         [string]$filePath
     )
+    
+    $item = Get-Item "$filePath"
+    $dc = $item.CreationTime.ToString($datetime_format)
+    $dm = $item.LastWriteTime.ToString($datetime_format)
 
-    # Get the creation and modification timestamps of the file or folder
-    $dc = (Get-Item "$filePath").CreationTime.ToString($datetime_format)
-    $dm = (Get-Item "$filePath").LastWriteTime.ToString($datetime_format)
-
-    # Display the timestamps
     echo "File/Folder:   $filePath"
     echo "---"
     echo "Date Created:  $dc"
@@ -202,30 +201,45 @@ function pastedm {
     echo "Canceled"
   fi
 }
+#>
 
 function paste {
-  guard
-  dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
-  dm_old="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
-  dc_new=$(sed -n '1p' "$clip_file")
-  dm_new=$(sed -n '2p' "$clip_file")
-  echo "File/Folder:   $1"
-  echo "---"
-  highlight_diff "Date Created: " "$dc_old" "$dc_new"
-  echo "---"
-  highlight_diff "Date Modified:" "$dm_old" "$dm_new"
-  echo "---"
-  read -p "Apply changes? (y/N) " yn
-  if [ "${yn,,}" = "y" ]
-  then
-    powershell.exe -Command "(Get-Item '$1').CreationTime=[datetime]::ParseExact('$dc_new', '$datetime_format', \$null)"
-    powershell.exe -Command "(Get-Item '$1').LastWriteTime=[datetime]::ParseExact('$dm_new', '$datetime_format', \$null)"
-    echo "Done"
-  else
-    echo "Canceled"
-  fi
+    param (
+        [string]$filePath
+    )
+
+    #guard
+
+    $timestamps = Get-Content -Path "$clip_file"
+    $dc_new = $timestamps[0]
+    $dm_new = $timestamps[1]
+
+    $item = Get-Item "$filePath"
+    $dc_old = $item.CreationTime.ToString($datetime_format)
+    $dm_old = $item.LastWriteTime.ToString($datetime_format)
+
+    echo "File/Folder:   $filePath"
+    echo "---"
+    #highlight_diff "Date Created: " "$dc_old" "$dc_new"
+    echo "Date Created:  $dc_old (old)"
+    echo "Date Created:  $dc_new (new)"
+    echo "---"
+    #highlight_diff "Date Modified:" "$dm_old" "$dm_new"
+    echo "Date Modified: $dm_old (old)"
+    echo "Date Modified: $dm_new (new)"
+    echo "---"
+
+    $applyChanges = Read-Host "Apply changes? (y/N)"
+    if ($applyChanges -eq "y") {
+        $item.CreationTime = [datetime]::ParseExact($dc_new, $datetime_format, $null)
+        $item.LastWriteTime = [datetime]::ParseExact($dm_new, $datetime_format, $null)
+        echo "Done"
+    } else {
+        echo "Canceled"
+    }
 }
 
+<#
 function guard() {
   if ! [ -f "$clip_file" ]; then
     echo "Timestamps clipboard empty."
