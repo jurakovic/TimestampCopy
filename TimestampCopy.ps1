@@ -273,13 +273,10 @@ function highlight_diff() {
         [string]$new
     )
 
-    $reset = "`e[0m"
-    $green = "`e[1;32m"
     $changed = $false
 
-    echo "$label $old (old)$reset"
-
-    echo -NoNewline "$label "
+    Write-Host "$label $old (old)"
+    Write-Host -NoNewline "$label "
 
     $oldParts = $old -split '[- :]'
     $newParts = $new -split '[- :]'
@@ -290,29 +287,29 @@ function highlight_diff() {
             [string]$newVal
         )
         if ($oldVal -eq $newVal) {
-            echo -NoNewline "${newVal}${reset}"
+            Write-Host -NoNewline $newVal
         } else {
-            echo -NoNewline "${green}${newVal}${reset}"
+            Write-Host -NoNewline $newVal -ForegroundColor Green
             $script:changed = $true
         }
     }
 
     color_part $oldParts[0] $newParts[0] # y
-    echo -NoNewline "-"
+    Write-Host -NoNewline "-"
     color_part $oldParts[1] $newParts[1] # m
-    echo -NoNewline "-"
+    Write-Host -NoNewline "-"
     color_part $oldParts[2] $newParts[2] # d
-    echo -NoNewline " "
+    Write-Host -NoNewline " "
     color_part $oldParts[3] $newParts[3] # H
-    echo -NoNewline ":"
+    Write-Host -NoNewline ":"
     color_part $oldParts[4] $newParts[4] # M
-    echo -NoNewline ":"
+    Write-Host -NoNewline ":"
     color_part $oldParts[5] $newParts[5] # S
 
     if ($changed) {
-        echo " ${green}(new)${reset}"
+        Write-Host " (new)" -ForegroundColor Green
     } else {
-        echo " (new)${reset}"
+        Write-Host " (new)"
     }
 }
 
