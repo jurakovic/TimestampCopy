@@ -77,7 +77,7 @@ function install_internal() {
 
     $itemPath = "$rootKey\shell"
     add_menu_root "$rootKey" "Timestamp Copy" "$iconPath"
-    add_menu_item "$itemPath\010CopyDateCreatedModified" "Copy" "copy"
+    add_menu_item "$itemPath\010CopyDateCreatedModified" "Copy" "copy1"
     add_menu_item "$itemPath\020PasteDateCreatedModified" "Paste" "paste"
     add_menu_item "$itemPath\030PasteDateCreated" "Paste 'Date Created'" "pastedc"
     add_menu_item "$itemPath\040PasteDateModified" "Paste 'Date Modified'" "pastedm"
@@ -135,23 +135,30 @@ function uninstall_internal() {
     }
 }
 
-<#
 ##### context menu commands (copy/paste functions)
 
-function copy {
-  dc="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
-  dm="$(powershell.exe -Command '(Get-Item '\"$1\"').LastWriteTime.ToString('\"$datetime_format\"')')"
-  echo "File/Folder:   $1"
-  echo "---"
-  echo "Date Created:  $dc"
-  echo "Date Modified: $dm"
+function copy1 {
+    param (
+        [string]$filePath
+    )
 
-  echo "$dc" >  "$clip_file"
-  echo "$dm" >> "$clip_file"
-  echo "---"
-  echo "Timestamps copied"
+    # Get the creation and modification timestamps of the file or folder
+    $dc = (Get-Item "$filePath").CreationTime.ToString($datetime_format)
+    $dm = (Get-Item "$filePath").LastWriteTime.ToString($datetime_format)
+
+    # Display the timestamps
+    echo "File/Folder:   $filePath"
+    echo "---"
+    echo "Date Created:  $dc"
+    echo "Date Modified: $dm"
+
+    Set-Content -Path "$clip_file" -Value "$dc`n$dm"
+
+    echo "---"
+    echo "Timestamps copied"
 }
 
+<#
 function pastedc {
   guard
   dc_old="$(powershell.exe -Command '(Get-Item '\"$1\"').CreationTime.ToString('\"$datetime_format\"')')"
@@ -322,8 +329,8 @@ if ($args.Count -eq 1) { # cli arguments
         uninstall
     }
 } elseif ($args.Count -eq 2) { # context menu commands
-    Write-Output "$args.Count -eq 2"
-    #Invoke-Expression "$($args[0]) $($args[1])"
+    #Write-Output "$args.Count -eq 2"
+    Invoke-Expression "$($args[0]) $($args[1])"
     __pause
 } else {
     show_menu
