@@ -240,7 +240,7 @@ function guard() {
     }
 
     $timestamps = Get-Content -Path "$clip_file"
-    if ($timestamps.Count -lt 2) {
+    if ($timestamps.Count -ne 2) {
         echo "Timestamps clipboard corrupted. Copy new timestamps."
         __pause "exit"
         exit 0
