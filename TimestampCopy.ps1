@@ -2,7 +2,6 @@
 ##### Constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
 $version = "2.0.0-preview.1"
-$psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
@@ -99,7 +98,7 @@ function Add-MenuItem {
     )
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d """$psPath"" ""$scriptPath"" ""$Arg"" ""'%1'""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' ""'$Arg'"" ""'%1'""""""" /f | Out-Null
 }
 
 function Uninstall {
