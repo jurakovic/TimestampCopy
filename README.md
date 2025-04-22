@@ -36,44 +36,34 @@ Right-click on another file or folder and choose:
 `Paste 'Date Created'` – to apply only the Date Created  
 `Paste 'Date Modified'` – to apply only the Date Modified  
 
-Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with the appropriate parameters (example screenshots below).
+Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the appropriate parameters (example screenshots below).
 
 ### Requirements
 
 - Windows 10/11 (tested on Windows 11 24H2)  
 - PowerShell 5.1 or later  
-- Bash (recommended: Git for Windows)  
 - Administrator privileges (required for installation)
-
-> **Bash** can be installed on Windows in several ways, including:
-> - [Git for Windows](https://gitforwindows.org) (comes with the MSYS2 runtime – [Git for Windows flavor](https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md))
-> - [MSYS2](https://www.msys2.org)
-> - [Cygwin](https://cygwin.com)
-> - [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
->
-> The recommended way is to use **Git for Windows** as it provides a lightweight and user-friendly environment for running Bash scripts on Windows.  
-> This script is designed to work with Git for Windows and the official MSYS2 runtime. It doesn't work with Cygwin or WSL. It could work with some minor modifications, and while I don't plan to do it myself, feel free to update it to suit your own needs.  
 
 ### Installation
 
 1. Clone the repository.
-	```bash
+	```ps
 	git clone https://github.com/jurakovic/timestamp-copy.git
 	```
-2. Open an elevated Bash terminal ('Run as Administrator').
+2. Open an elevated Powershell terminal ('Run as Administrator').
 3. Navigate to the directory where you cloned the repository.
-	```bash
+	```ps
 	cd timestamp-copy
 	```
 4. Add the context menu entries. This can be done in two ways.  
-	Run the `tscp.sh` script
-	```bash
-	./tscp.sh
+	Run the `TimestampCopy.ps1` script
+	```ps
+	.\TimestampCopy.ps1
 	```
 
 	and then choose the option `i`
 	```text
-	Timestamp Copy (1.0.0)
+	Timestamp Copy (1.1.0)
 
 	[i] Install
 	[u] Uninstall
@@ -84,8 +74,8 @@ Each entry starts Bash terminal and runs the [`tscp.sh`](tscp.sh) script with th
 	```
 
 	or run the script with the `-i` option to install it directly:
-	```bash
-	./tscp.sh -i
+	```ps
+	.\TimestampCopy.ps1 -i
 	```
 
 ### Screenshots
