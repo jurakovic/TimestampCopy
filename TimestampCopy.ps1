@@ -20,12 +20,12 @@ function Show-Menu {
     Write-Host "  [i] Install               "
     Write-Host "  [u] Uninstall             "
     Write-Host "                            "
-    Write-Host "  [q] Quit                  "
+    Write-Host "  [x] Quit                  "
     Write-Host ""
     $option = Read-Host "Choose option"
     Clear-Host
     Perform-Action -Option $option
-    if ($option -ine "q") {
+    if ($option -ine "x") {
         Pause-Script "continue"
         Show-Menu
     }
@@ -39,7 +39,7 @@ function Perform-Action {
     switch ($Option) {
         "i" { Install }
         "u" { Uninstall }
-        "q" { return }
+        "x" { return }
         default { Write-Host "Unknown option: $Option" }
     }
 }
