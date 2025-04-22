@@ -115,9 +115,7 @@ function uninstall_internal() {
         [string]$rootKey
     )
 
-    if (reg.exe query "$rootKey" *> $null) {
-        reg.exe delete "$rootKey" /f | Out-Null
-    }
+    reg.exe delete "$rootKey" /f *> $null
 }
 
 ##### context menu commands (copy/paste functions)
