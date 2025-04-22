@@ -47,17 +47,17 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 ### Installation
 
 1. Clone the repository.
-	```ps
+	```powershell
 	git clone https://github.com/jurakovic/timestamp-copy.git
 	```
 2. Open an elevated Powershell terminal ('Run as Administrator').
 3. Navigate to the directory where you cloned the repository.
-	```ps
+	```powershell
 	cd timestamp-copy
 	```
 4. Add the context menu entries. This can be done in two ways.  
 	Run the `TimestampCopy.ps1` script
-	```ps
+	```powershell
 	.\TimestampCopy.ps1
 	```
 
@@ -74,7 +74,7 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 	```
 
 	or run the script with the `-i` option to install it directly:
-	```ps
+	```powershell
 	.\TimestampCopy.ps1 -i
 	```
 
@@ -93,10 +93,6 @@ This script is designed to work with **only one selected file or folder at a tim
 ### Disclaimer
 
 This script is provided **as-is**, without any warranties or guarantees of fitness for a particular purpose. It was created solely for educational and experimental use, and I do **not** intend to actively support or maintain it. While it should work reliably in most cases, use it at your own risk.  
-
-### Future Plans
-
-In the future, I plan to develop a more robust and user-friendly version written entirely in PowerShell for a more native Windows experience.
 
 ---
 
