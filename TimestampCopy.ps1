@@ -319,7 +319,7 @@ if ($args.Count -eq 1) { # cli arguments
         Write-Host "For help visit $homepage"
     }
 } elseif ($args.Count -eq 2) { # Context menu commands
-    Invoke-Expression "$($args[0]) $($args[1])"
+    Invoke-Expression "$($args[0]) ""$($args[1])"""
     Pause-Script
 } else {
     Show-Menu
