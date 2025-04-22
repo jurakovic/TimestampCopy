@@ -1,7 +1,7 @@
 
 ##### Constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
-$version = "2.0.0"
+$version = "2.1.0-preview.1"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$PSScriptRoot\tscp.ico"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
