@@ -1,7 +1,16 @@
+[CmdletBinding(PositionalBinding=$false)]
+Param(
+    [switch][Alias('h')]$help,
+    [switch][Alias('v')]$version,
+    [switch][Alias('i')]$install,
+    [switch][Alias('u')]$uninstall,
+    [string][Alias('a')]$action,
+    [string]$path
+)
 
 ##### Constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
-$version = "2.1.0-preview.1"
+$versionn = "2.1.0-preview.1"
 $appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
 $scriptPath = "$appdataPath\tscp.ps1"
 $iconPath = "$appdataPath\icon.ico"
@@ -15,7 +24,7 @@ $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 function Show-Menu {
     Clear-Host
     Write-Host ""
-    Write-Host "  Timestamp Copy ($version)"
+    Write-Host "  Timestamp Copy ($versionn)"
     Write-Host "                            "
     Write-Host "  [i] Install               "
     Write-Host "  [u] Uninstall             "
@@ -85,10 +94,10 @@ function Install-Internal {
 
     $itemPath = "$RootKey\shell"
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -Icon "$iconPath"
-    Add-MenuItem -Key "$itemPath\010CopyTimestamps" -Label "Copy" -Arg "Copy-Timestamps"
-    Add-MenuItem -Key "$itemPath\020PasteTimestamps" -Label "Paste" -Arg "Paste-Timestamps"
-    Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Arg "Paste-DateCreated"
-    Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Arg "Paste-DateModified"
+    Add-MenuItem -Key "$itemPath\010CopyTimestamps" -Label "Copy" -Action "Copy-Timestamps"
+    Add-MenuItem -Key "$itemPath\020PasteTimestamps" -Label "Paste" -Action "Paste-Timestamps"
+    Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "Paste-DateCreated"
+    Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "Paste-DateModified"
 }
 
 function Add-MenuRoot {
@@ -107,11 +116,11 @@ function Add-MenuItem {
     param (
         [string]$Key,
         [string]$Label,
-        [string]$Arg
+        [string]$Action
     )
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' ""'$Arg'"" ""'%1'""""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -action ""'$Action'"" -path ""'%1'""""""" /f | Out-Null
 }
 
 function Uninstall {
@@ -317,22 +326,30 @@ function Highlight-Diff {
 
 ##### Main
 
-if ($args.Count -eq 1) { # cli arguments
-    if ($args[0] -in @("-v", "--version")) {
-        Write-Host $version
-    }
-    elseif ($args[0] -in @("-i", "--install")) {
-        Install
-    }
-    elseif ($args[0] -in @("-u", "--uninstall")) {
-        Uninstall
-    }
-    elseif ($args[0] -in @("-h", "--help", "-?")) {
-        Write-Host "For help visit $homepage"
-    }
-} elseif ($args.Count -eq 2) { # Context menu commands
-    Invoke-Expression "$($args[0]) ""$($args[1])"""
-    Pause-Script
-} else {
-    Show-Menu
+if ($help) {
+    Write-Host "For help visit $homepage"
+    exit 0
 }
+
+if ($version) {
+    Write-Host "$versionn"
+    exit 0
+}
+
+if ($install) {
+    Install
+    exit 0
+}
+
+if ($uninstall) {
+    Install
+    exit 0
+}
+
+if ($action -And $path) {
+    Invoke-Expression "$($action) ""$($path)"""
+    Pause-Script
+    exit 0
+}
+
+Show-Menu
