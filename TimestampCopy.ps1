@@ -3,7 +3,7 @@
 $homepage = "https://github.com/jurakovic/timestamp-copy"
 $version = "2.0.0-preview.1"
 $scriptPath = "$PSCommandPath"
-$iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
+$iconPath = "$PSScriptRoot\tscp.ico"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $clipFile = "$HOME\.tscp"
@@ -24,7 +24,7 @@ function Show-Menu {
     $option = Read-Host "Choose option"
     Clear-Host
     Perform-Action -Option $option
-    if ($option -ne "q") {
+    if ($option -ine "q") {
         Pause-Script "continue"
         Show-Menu
     }
@@ -53,7 +53,7 @@ function Pause-Script {
 
 function Install {
     net session *> $null
-    if (-not $?) {
+    if (-Not $?) {
         Write-Host "Not running as Admin"
         Pause-Script "exit"
         exit 1
@@ -71,7 +71,7 @@ function Install-Internal {
     )
 
     $itemPath = "$RootKey\shell"
-    Add-MenuRoot -Key $RootKey -Label "Timestamp Copy" -Icon "$iconPath"
+    Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -Icon "$iconPath"
     Add-MenuItem -Key "$itemPath\010CopyDateCreatedModified" -Label "Copy" -Arg "Copy-Timestamps"
     Add-MenuItem -Key "$itemPath\020PasteDateCreatedModified" -Label "Paste" -Arg "Paste-Timestamps"
     Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Arg "Paste-DateCreated"
@@ -161,7 +161,7 @@ function Paste-DateCreated {
     Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
+    if ($applyChanges -ieq "y") {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         Write-Host "Done"
     } else {
@@ -191,7 +191,7 @@ function Paste-DateModified {
     Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
+    if ($applyChanges -ieq "y") {
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Write-Host "Done"
     } else {
@@ -222,7 +222,7 @@ function Paste-Timestamps {
     Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
+    if ($applyChanges -ieq "y") {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Write-Host "Done"
@@ -232,7 +232,7 @@ function Paste-Timestamps {
 }
 
 function Guard-Clipboard {
-    if (-not (Test-Path -Path "$clipFile")) {
+    if (-Not (Test-Path -Path "$clipFile")) {
         Write-Host "Timestamps clipboard empty."
         Pause-Script "exit"
         exit 0
@@ -267,15 +267,15 @@ function Highlight-Diff {
     Write-Host "$Label $Old (old)"
     Write-Host -NoNewline "$Label "
 
-    $oldParts = $Old -split '[- :]'
-    $newParts = $New -split '[- :]'
+    $oldParts = $Old -split "[- :]"
+    $newParts = $New -split "[- :]"
 
     function Color-Part {
         param (
             [string]$OldVal,
             [string]$NewVal
         )
-        if ($OldVal -eq "$NewVal") {
+        if ("$OldVal" -eq "$NewVal") {
             Write-Host -NoNewline "$NewVal"
         } else {
             Write-Host -NoNewline "$NewVal" -ForegroundColor Green
