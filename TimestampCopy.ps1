@@ -72,8 +72,8 @@ function Install-Internal {
 
     $itemPath = "$RootKey\shell"
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -Icon "$iconPath"
-    Add-MenuItem -Key "$itemPath\010CopyDateCreatedModified" -Label "Copy" -Arg "Copy-Timestamps"
-    Add-MenuItem -Key "$itemPath\020PasteDateCreatedModified" -Label "Paste" -Arg "Paste-Timestamps"
+    Add-MenuItem -Key "$itemPath\010CopyTimestamps" -Label "Copy" -Arg "Copy-Timestamps"
+    Add-MenuItem -Key "$itemPath\020PasteTimestamps" -Label "Paste" -Arg "Paste-Timestamps"
     Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Arg "Paste-DateCreated"
     Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Arg "Paste-DateModified"
 }
