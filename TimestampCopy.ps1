@@ -2,11 +2,12 @@
 ##### Constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
 $version = "2.1.0-preview.1"
-$scriptPath = "$env:LOCALAPPDATA\TimestampCopy\TimestampCopy.ps1"
-$iconPath = "$env:LOCALAPPDATA\TimestampCopy\tscp.ico"
+$appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
+$scriptPath = "$appdataPath\tscp.ps1"
+$iconPath = "$appdataPath\icon.ico"
+$clipFile = "$appdataPath\clip"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
-$clipFile = "$env:LOCALAPPDATA\TimestampCopy\.tscp"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
 ##### Install/Uninstall Functions
@@ -67,7 +68,7 @@ function Install {
 }
 
 function Setup-AppData {
-    New-Item -Path "$env:LOCALAPPDATA" -Name "TimestampCopy" -ItemType Directory -Force | Out-Null
+    New-Item -Path "$appdataPath" -ItemType Directory -Force | Out-Null
     Copy-Item "$PSCommandPath" -Destination "$scriptPath"
 
     $iconBase64 = @'
@@ -117,7 +118,7 @@ function Uninstall {
     Write-Host "Uninstalling..."
     Uninstall-Internal -RootKey "$fRootKey"
     Uninstall-Internal -RootKey "$dRootKey"
-    Remove-Item -Recurse -Force -Path "$env:LOCALAPPDATA\TimestampCopy" *> $null
+    Remove-Item -Recurse -Force -Path "$appdataPath" *> $null
     Write-Host "Done"
 }
 
