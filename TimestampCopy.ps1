@@ -99,7 +99,7 @@ function Add-MenuItem {
     )
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d """$psPath"" ""$scriptPath"" ""$Arg"" ""%1""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d """$psPath"" ""$scriptPath"" ""$Arg"" ""'%1'""" /f | Out-Null
 }
 
 function Uninstall {
