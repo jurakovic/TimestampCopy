@@ -63,7 +63,7 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 
 	and then choose the option `i`
 	```text
-	Timestamp Copy (1.1.0)
+	Timestamp Copy (2.0.0-preview.1)
 
 	[i] Install
 	[u] Uninstall

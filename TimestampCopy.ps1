@@ -1,7 +1,7 @@
 
 ##### constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
-$version = "1.1.0"
+$version = "2.0.0-preview.1"
 $psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
