@@ -5,6 +5,10 @@ Timestamps Copy is a lightweight PowerShell script that integrates directly into
 
 This solution is especially useful when you need to preserve or replicate Date Created and Date Modified values across files or folders – ideal for organizing backups, restoring files, or syncing metadata.
 
+### Latest Release
+
+[![GitHub Release](https://img.shields.io/github/v/release/jurakovic/timestamp-copy?include_prereleases)](https://github.com/jurakovic/timestamp-copy/releases/latest)
+
 ### Features
 
 #### Explorer Context Menu Integration
@@ -63,7 +67,7 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 
 	and then choose the option `i`
 	```text
-	Timestamp Copy (2.0.0-preview.1)
+	Timestamp Copy (2.0.0)
 
 	[i] Install
 	[u] Uninstall
@@ -94,10 +98,12 @@ This script is designed to work with **only one selected file or folder at a tim
 
 This script is provided **as-is**, without any warranties or guarantees of fitness for a particular purpose. While it should work reliably in most cases, use it at your own risk.  
 
-### Old Versions
+---
 
-- [v1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0) - Initial script written in Bash. It was created solely for educational and experimental use.
+### Old Releases
 
+- [v1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0): Initial [tscp.sh](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use.
+- [v2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1): Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment.
 
 ---
 

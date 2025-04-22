@@ -1,303 +1,299 @@
 
-##### constants
+##### Constants
 $homepage = "https://github.com/jurakovic/timestamp-copy"
-$version = "2.0.0-preview.1"
-$psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+$version = "2.0.0"
 $scriptPath = "$PSCommandPath"
-$iconPath = "$(Split-Path -Parent $PSCommandPath)\tscp.ico"
+$iconPath = "$PSScriptRoot\tscp.ico"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
-$clip_file = "$HOME\.tscp"
-$datetime_format = "yyyy-MM-dd HH:mm:ss"
+$clipFile = "$HOME\.tscp"
+$datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
-##### install/uninstall functions
+##### Install/Uninstall Functions
 
-function show_menu() {
-    clear
-    echo ""
-    echo "  Timestamp Copy ($version)"
-    echo "                            "
-    echo "  [i] Install               "
-    echo "  [u] Uninstall             "
-    echo "                            "
-    echo "  [q] Quit                  "
-    echo ""
+function Show-Menu {
+    Clear-Host
+    Write-Host ""
+    Write-Host "  Timestamp Copy ($version)"
+    Write-Host "                            "
+    Write-Host "  [i] Install               "
+    Write-Host "  [u] Uninstall             "
+    Write-Host "                            "
+    Write-Host "  [q] Quit                  "
+    Write-Host ""
     $option = Read-Host "Choose option"
-    clear
-    __perform_action $option
-    if ($option -ne "q") {
-        __pause "continue"
-        show_menu
+    Clear-Host
+    Perform-Action -Option $option
+    if ($option -ine "q") {
+        Pause-Script "continue"
+        Show-Menu
     }
 }
 
-function __perform_action() {
+function Perform-Action {
     param (
-        [string]$option
+        [string]$Option
     )
 
-    switch ($option) {
-        "i" { install }
-        "u" { uninstall }
+    switch ($Option) {
+        "i" { Install }
+        "u" { Uninstall }
         "q" { return }
-        default { echo "unknown option: $option" }
+        default { Write-Host "Unknown option: $Option" }
     }
 }
 
-function __pause() {
+function Pause-Script {
     param (
-        [string]$option="exit"
+        [string]$Option = "exit"
     )
-    Write-Host -NoNewLine "Press any key to $option...";
-    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+    Write-Host -NoNewLine "Press any key to $Option..."
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 }
 
-function install() {
+function Install {
     net session *> $null
-    if ($? -ne $True) {
-        echo "Not running as Admin"
-        __pause "exit"
+    if (-Not $?) {
+        Write-Host "Not running as Admin"
+        Pause-Script "exit"
         exit 1
     }
 
-    echo "Installing..."
-    install_internal "$fRootKey"
-    install_internal "$dRootKey"
-    echo "Done"
+    Write-Host "Installing..."
+    Install-Internal -RootKey "$fRootKey"
+    Install-Internal -RootKey "$dRootKey"
+    Write-Host "Done"
 }
 
-function install_internal() {
+function Install-Internal {
     param (
-        [string]$rootKey
+        [string]$RootKey
     )
 
-    $itemPath = "$rootKey\shell"
-    add_menu_root "$rootKey" "Timestamp Copy" "$iconPath"
-    add_menu_item "$itemPath\010CopyDateCreatedModified" "Copy" "copy1"
-    add_menu_item "$itemPath\020PasteDateCreatedModified" "Paste" "paste"
-    add_menu_item "$itemPath\030PasteDateCreated" "Paste 'Date Created'" "pastedc"
-    add_menu_item "$itemPath\040PasteDateModified" "Paste 'Date Modified'" "pastedm"
+    $itemPath = "$RootKey\shell"
+    Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -Icon "$iconPath"
+    Add-MenuItem -Key "$itemPath\010CopyDateCreatedModified" -Label "Copy" -Arg "Copy-Timestamps"
+    Add-MenuItem -Key "$itemPath\020PasteDateCreatedModified" -Label "Paste" -Arg "Paste-Timestamps"
+    Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Arg "Paste-DateCreated"
+    Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Arg "Paste-DateModified"
 }
 
-function add_menu_root() {
+function Add-MenuRoot {
     param (
-        [string]$key,
-        [string]$label,
-        [string]$icon
+        [string]$Key,
+        [string]$Label,
+        [string]$Icon
     )
 
-    reg.exe add "$key" /v MUIVerb /d "$label" /f | Out-Null
-    reg.exe add "$key" /v SubCommands /f | Out-Null
-    reg.exe add "$key" /v Icon /d "$icon" /f | Out-Null
+    reg.exe add "$Key" /v MUIVerb /d "$Label" /f | Out-Null
+    reg.exe add "$Key" /v SubCommands /f | Out-Null
+    reg.exe add "$Key" /v Icon /d "$Icon" /f | Out-Null
 }
 
-function add_menu_item() {
+function Add-MenuItem {
     param (
-        [string]$key,
-        [string]$label,
-        [string]$arg
+        [string]$Key,
+        [string]$Label,
+        [string]$Arg
     )
 
-    reg.exe add "$key" /ve /d "$label" /f | Out-Null
-    reg.exe add "$key\command" /ve /d """$psPath"" ""$scriptPath"" ""$arg"" ""%1""" /f | Out-Null
+    reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' ""'$Arg'"" ""'%1'""""""" /f | Out-Null
 }
 
-function uninstall() {
-  echo "Uninstalling..."
-  uninstall_internal "$fRootKey"
-  uninstall_internal "$dRootKey"
-  rm -Force "$clip_file" *> $null
-  echo "Done"
+function Uninstall {
+    Write-Host "Uninstalling..."
+    Uninstall-Internal -RootKey "$fRootKey"
+    Uninstall-Internal -RootKey "$dRootKey"
+    Remove-Item -Force -Path "$clipFile" *> $null
+    Write-Host "Done"
 }
 
-function uninstall_internal() {
+function Uninstall-Internal {
     param (
-        [string]$rootKey
+        [string]$RootKey
     )
 
-    reg.exe delete "$rootKey" /f *> $null
+    reg.exe delete "$RootKey" /f *> $null
 }
 
-##### context menu commands (copy/paste functions)
+##### Context Menu Commands (Copy/Paste Functions)
 
-function copy1 {
+function Copy-Timestamps {
     param (
-        [string]$filePath
+        [string]$FilePath
     )
 
-    $item = Get-Item "$filePath"
-    $dc = $item.CreationTime.ToString($datetime_format)
-    $dm = $item.LastWriteTime.ToString($datetime_format)
+    $item = Get-Item -Path "$FilePath"
+    $dc = $item.CreationTime.ToString("$datetimeFormat")
+    $dm = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    echo "File/Folder:   $filePath"
-    echo "---"
-    echo "Date Created:  $dc"
-    echo "Date Modified: $dm"
+    Write-Host "File/Folder:   $FilePath"
+    Write-Host "---"
+    Write-Host "Date Created:  $dc"
+    Write-Host "Date Modified: $dm"
 
-    Set-Content -Path "$clip_file" -Value "$dc`n$dm"
+    Set-Content -Path "$clipFile" -Value "$dc`n$dm"
 
-    echo "---"
-    echo "Timestamps copied"
+    Write-Host "---"
+    Write-Host "Timestamps copied"
 }
 
-function pastedc {
+function Paste-DateCreated {
     param (
-        [string]$filePath
+        [string]$FilePath
     )
 
-    guard
+    Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clip_file"
-    $dc_new = $timestamps[0]
+    $timestamps = Get-Content -Path "$clipFile"
+    $dcNew = $timestamps[0]
 
-    $item = Get-Item "$filePath"
-    $dc_old = $item.CreationTime.ToString($datetime_format)
-    $dm_old = $item.LastWriteTime.ToString($datetime_format)
+    $item = Get-Item -Path "$FilePath"
+    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
+    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    echo "File/Folder:   $filePath"
-    echo "---"
-    highlight_diff "Date Created: " "$dc_old" "$dc_new"
-    echo "---"
-    highlight_diff "Date Modified:" "$dm_old" "$dm_old"
-    echo "---"
+    Write-Host "File/Folder:   $FilePath"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmOld"
+    Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
-        $item.CreationTime = [datetime]::ParseExact($dc_new, $datetime_format, $null)
-        echo "Done"
+    if ($applyChanges -ieq "y") {
+        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
+        Write-Host "Done"
     } else {
-        echo "Canceled"
+        Write-Host "Canceled"
     }
 }
 
-function pastedm {
+function Paste-DateModified {
     param (
-        [string]$filePath
+        [string]$FilePath
     )
 
-    guard
+    Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clip_file"
-    $dm_new = $timestamps[1]
+    $timestamps = Get-Content -Path "$clipFile"
+    $dmNew = $timestamps[1]
 
-    $item = Get-Item "$filePath"
-    $dc_old = $item.CreationTime.ToString($datetime_format)
-    $dm_old = $item.LastWriteTime.ToString($datetime_format)
+    $item = Get-Item -Path "$FilePath"
+    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
+    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    echo "File/Folder:   $filePath"
-    echo "---"
-    highlight_diff "Date Created: " "$dc_old" "$dc_old"
-    echo "---"
-    highlight_diff "Date Modified:" "$dm_old" "$dm_new"
-    echo "---"
+    Write-Host "File/Folder:   $FilePath"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcOld"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
+    Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
-        $item.LastWriteTime = [datetime]::ParseExact($dm_new, $datetime_format, $null)
-        echo "Done"
+    if ($applyChanges -ieq "y") {
+        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        Write-Host "Done"
     } else {
-        echo "Canceled"
+        Write-Host "Canceled"
     }
 }
 
-function paste {
+function Paste-Timestamps {
     param (
-        [string]$filePath
+        [string]$FilePath
     )
 
-    guard
+    Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clip_file"
-    $dc_new = $timestamps[0]
-    $dm_new = $timestamps[1]
+    $timestamps = Get-Content -Path "$clipFile"
+    $dcNew = $timestamps[0]
+    $dmNew = $timestamps[1]
 
-    $item = Get-Item "$filePath"
-    $dc_old = $item.CreationTime.ToString($datetime_format)
-    $dm_old = $item.LastWriteTime.ToString($datetime_format)
+    $item = Get-Item -Path "$FilePath"
+    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
+    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    echo "File/Folder:   $filePath"
-    echo "---"
-    highlight_diff "Date Created: " "$dc_old" "$dc_new"
-    echo "---"
-    highlight_diff "Date Modified:" "$dm_old" "$dm_new"
-    echo "---"
+    Write-Host "File/Folder:   $FilePath"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
+    Write-Host "---"
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -eq "y") {
-        $item.CreationTime = [datetime]::ParseExact($dc_new, $datetime_format, $null)
-        $item.LastWriteTime = [datetime]::ParseExact($dm_new, $datetime_format, $null)
-        echo "Done"
+    if ($applyChanges -ieq "y") {
+        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
+        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        Write-Host "Done"
     } else {
-        echo "Canceled"
+        Write-Host "Canceled"
     }
 }
 
-function guard() {
-    if (-not (Test-Path "$clip_file")) {
-        echo "Timestamps clipboard empty."
-        __pause "exit"
+function Guard-Clipboard {
+    if (-Not (Test-Path -Path "$clipFile")) {
+        Write-Host "Timestamps clipboard empty."
+        Pause-Script "exit"
         exit 0
     }
 
-    $timestamps = Get-Content -Path "$clip_file"
+    $timestamps = Get-Content -Path "$clipFile"
     if ($timestamps.Count -ne 2) {
-        echo "Timestamps clipboard corrupted. Copy new timestamps."
-        __pause "exit"
+        Write-Host "Timestamps clipboard corrupted. Copy new timestamps."
+        Pause-Script "exit"
         exit 0
     }
-
-    $dc = $timestamps[0]
-    $dm = $timestamps[1]
 
     try {
-        [datetime]::ParseExact($dc, $datetime_format, $null) | Out-Null
-        [datetime]::ParseExact($dm, $datetime_format, $null) | Out-Null
+        [datetime]::ParseExact($timestamps[0], "$datetimeFormat", $null) | Out-Null
+        [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
     } catch {
-        echo "Timestamps clipboard corrupted. Copy new timestamps."
-        __pause "exit"
+        Write-Host "Timestamps clipboard corrupted. Copy new timestamps."
+        Pause-Script "exit"
         exit 0
     }
 }
 
-function highlight_diff() {
+function Highlight-Diff {
     param (
-        [string]$label,
-        [string]$old,
-        [string]$new
+        [string]$Label,
+        [string]$Old,
+        [string]$New
     )
 
     $changed = $false
 
-    Write-Host "$label $old (old)"
-    Write-Host -NoNewline "$label "
+    Write-Host "$Label $Old (old)"
+    Write-Host -NoNewline "$Label "
 
-    $oldParts = $old -split '[- :]'
-    $newParts = $new -split '[- :]'
+    $oldParts = $Old -split "[- :]"
+    $newParts = $New -split "[- :]"
 
-    function color_part {
+    function Color-Part {
         param (
-            [string]$oldVal,
-            [string]$newVal
+            [string]$OldVal,
+            [string]$NewVal
         )
-        if ($oldVal -eq $newVal) {
-            Write-Host -NoNewline $newVal
+        if ("$OldVal" -eq "$NewVal") {
+            Write-Host -NoNewline "$NewVal"
         } else {
-            Write-Host -NoNewline $newVal -ForegroundColor Green
+            Write-Host -NoNewline "$NewVal" -ForegroundColor Green
             Set-Variable -Name changed -Value $true -Scope 1
         }
     }
 
-    color_part $oldParts[0] $newParts[0] # y
+    Color-Part $oldParts[0] $newParts[0] # y
     Write-Host -NoNewline "-"
-    color_part $oldParts[1] $newParts[1] # m
+    Color-Part $oldParts[1] $newParts[1] # m
     Write-Host -NoNewline "-"
-    color_part $oldParts[2] $newParts[2] # d
+    Color-Part $oldParts[2] $newParts[2] # d
     Write-Host -NoNewline " "
-    color_part $oldParts[3] $newParts[3] # H
+    Color-Part $oldParts[3] $newParts[3] # H
     Write-Host -NoNewline ":"
-    color_part $oldParts[4] $newParts[4] # M
+    Color-Part $oldParts[4] $newParts[4] # M
     Write-Host -NoNewline ":"
-    color_part $oldParts[5] $newParts[5] # S
+    Color-Part $oldParts[5] $newParts[5] # S
 
     if ($changed) {
         Write-Host " (new)" -ForegroundColor Green
@@ -309,21 +305,21 @@ function highlight_diff() {
 ##### Main
 
 if ($args.Count -eq 1) { # cli arguments
-    <##>if ($args[0] -in @("-v", "--version")) {
-        Write-Output $version
+    if ($args[0] -in @("-v", "--version")) {
+        Write-Host $version
     }
     elseif ($args[0] -in @("-i", "--install")) {
-        install
+        Install
     }
     elseif ($args[0] -in @("-u", "--uninstall")) {
-        uninstall
+        Uninstall
     }
     elseif ($args[0] -in @("-h", "--help", "-?")) {
-        echo "For help visit $homepage"
+        Write-Host "For help visit $homepage"
     }
-} elseif ($args.Count -eq 2) { # context menu commands
-    Invoke-Expression "$($args[0]) $($args[1])"
-    __pause
+} elseif ($args.Count -eq 2) { # Context menu commands
+    Invoke-Expression "$($args[0]) ""$($args[1])"""
+    Pause-Script
 } else {
-    show_menu
+    Show-Menu
 }
