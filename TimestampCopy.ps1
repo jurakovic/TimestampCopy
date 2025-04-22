@@ -124,7 +124,7 @@ function copy1 {
     param (
         [string]$filePath
     )
-    
+
     $item = Get-Item "$filePath"
     $dc = $item.CreationTime.ToString($datetime_format)
     $dm = $item.LastWriteTime.ToString($datetime_format)
@@ -283,7 +283,7 @@ function highlight_diff() {
             Write-Host -NoNewline $newVal
         } else {
             Write-Host -NoNewline $newVal -ForegroundColor Green
-            $script:changed = $true
+            Set-Variable -Name changed -Value $true -Scope 1
         }
     }
 
