@@ -139,6 +139,38 @@ function Copy-Timestamps {
     Write-Host "Timestamps copied"
 }
 
+function Paste-Timestamps {
+    param (
+        [string]$FilePath
+    )
+
+    Guard-Clipboard
+
+    $timestamps = Get-Content -Path "$clipFile"
+    $dcNew = $timestamps[0]
+    $dmNew = $timestamps[1]
+
+    $item = Get-Item -Path "$FilePath"
+    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
+    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
+
+    Write-Host "File/Folder:   $FilePath"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
+    Write-Host "---"
+    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
+    Write-Host "---"
+
+    $applyChanges = Read-Host "Apply changes? (y/N)"
+    if ($applyChanges -ieq "y") {
+        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
+        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        Write-Host "Done"
+    } else {
+        Write-Host "Canceled"
+    }
+}
+
 function Paste-DateCreated {
     param (
         [string]$FilePath
@@ -192,38 +224,6 @@ function Paste-DateModified {
 
     $applyChanges = Read-Host "Apply changes? (y/N)"
     if ($applyChanges -ieq "y") {
-        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
-        Write-Host "Done"
-    } else {
-        Write-Host "Canceled"
-    }
-}
-
-function Paste-Timestamps {
-    param (
-        [string]$FilePath
-    )
-
-    Guard-Clipboard
-
-    $timestamps = Get-Content -Path "$clipFile"
-    $dcNew = $timestamps[0]
-    $dmNew = $timestamps[1]
-
-    $item = Get-Item -Path "$FilePath"
-    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
-    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
-
-    Write-Host "File/Folder:   $FilePath"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
-    Write-Host "---"
-
-    $applyChanges = Read-Host "Apply changes? (y/N)"
-    if ($applyChanges -ieq "y") {
-        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Write-Host "Done"
     } else {
