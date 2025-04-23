@@ -195,7 +195,7 @@ function Paste-DateCreated {
     $dcOld = $item.CreationTime.ToString("$datetimeFormat")
     $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcNew" "$dmOld" "$dmOld" # We're using here the old DM value two times
+    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcNew" "$dmOld" "$dmOld" # We're using here "$dmOld" two times
 }
 
 function Paste-DateModified {
@@ -212,7 +212,7 @@ function Paste-DateModified {
     $dcOld = $item.CreationTime.ToString("$datetimeFormat")
     $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcOld" "$dmOld" "$dmNew" # We're using here the old DC value two times
+    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcOld" "$dmOld" "$dmNew" # We're using here "$dcOld" two times
 }
 
 function Paste-Timestamps-Internal {
@@ -245,8 +245,18 @@ function Paste-Timestamps-Internal {
 }
 
 function Undo-Timestamps {
-    Add-Type -AssemblyName PresentationCore,PresentationFramework
-    [System.Windows.MessageBox]::Show("Undo (todo)           ", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+    # todo guard
+
+    $timestamps = Get-Content -Path "$backPath"
+    $filePath = $timestamps[0]
+    $dcNew = $timestamps[1]
+    $dmNew = $timestamps[2]
+
+    $item = Get-Item -Path "$filePath"
+    $dcOld = $item.CreationTime.ToString("$datetimeFormat")
+    $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
+
+    Paste-Timestamps-Internal "$filePath" "$dcOld" "$dcNew" "$dmOld" "$dmNew"
 }
 
 function Guard-Clipboard {
