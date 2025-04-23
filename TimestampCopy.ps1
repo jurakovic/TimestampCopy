@@ -216,7 +216,9 @@ function Paste-DateCreated {
 
     $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
+        # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
+        $item.LastWriteTime = [datetime]::ParseExact("$dmOld", "$datetimeFormat", $null) # We're using here the old value
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
@@ -246,6 +248,8 @@ function Paste-DateModified {
 
     $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
+        # Changing both values triggers "Refresh" in Windows File Explorer
+        $item.CreationTime = [datetime]::ParseExact("$dcOld", "$datetimeFormat", $null) # We're using here the old value
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Write-Host "Done"
     } else {
