@@ -16,7 +16,7 @@ $scriptPath = "$PSCommandPath"
 $iconPath = "$PSScriptRoot\tscp.ico"
 $appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
 $clipPath = "$appdataPath\clip"
-$backPath = "$appdataPath\backup"
+$undoPath = "$appdataPath\clip-undo"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
@@ -237,7 +237,7 @@ function Paste-Timestamps-Internal {
         # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
-        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
+        Set-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
@@ -247,7 +247,7 @@ function Paste-Timestamps-Internal {
 function Undo-Timestamps {
     # todo guard
 
-    $timestamps = Get-Content -Path "$backPath"
+    $timestamps = Get-Content -Path "$undoPath"
     $filePath = $timestamps[0]
     $dcNew = $timestamps[1]
     $dmNew = $timestamps[2]
