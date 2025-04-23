@@ -178,22 +178,7 @@ function Paste-Timestamps {
     $dcOld = $item.CreationTime.ToString("$datetimeFormat")
     $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    Write-Host "File/Folder:   $FilePath"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
-    Write-Host "---"
-
-    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
-    if ($applyChanges -ieq "y") {
-        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
-        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
-        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
-        Write-Host "Done"
-    } else {
-        Write-Host "Canceled"
-    }
+    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcNew" "$dmOld" "$dmNew"
 }
 
 function Paste-DateCreated {
@@ -210,23 +195,7 @@ function Paste-DateCreated {
     $dcOld = $item.CreationTime.ToString("$datetimeFormat")
     $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
-    Write-Host "File/Folder:   $FilePath"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmOld"
-    Write-Host "---"
-
-    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
-    if ($applyChanges -ieq "y") {
-        # Changing both values triggers "Refresh" in Windows File Explorer
-        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
-        $item.LastWriteTime = [datetime]::ParseExact("$dmOld", "$datetimeFormat", $null) # We're using here the old value
-        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
-        Write-Host "Done"
-    } else {
-        Write-Host "Canceled"
-    }
+    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcNew" "$dmOld" "$dmOld" # We're using here the old DM value two times
 }
 
 function Paste-DateModified {
@@ -243,17 +212,30 @@ function Paste-DateModified {
     $dcOld = $item.CreationTime.ToString("$datetimeFormat")
     $dmOld = $item.LastWriteTime.ToString("$datetimeFormat")
 
+    Paste-Timestamps-Internal "$FilePath" "$dcOld" "$dcOld" "$dmOld" "$dmNew" # We're using here the old DC value two times
+}
+
+function Paste-Timestamps-Internal {
+    param (
+        [string]$FilePath,
+        [string]$dcOld,
+        [string]$dcNew,
+        [string]$dmOld,
+        [string]$dmNew
+    )
+
     Write-Host "File/Folder:   $FilePath"
     Write-Host "---"
-    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcOld"
+    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
     Write-Host "---"
     Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
     Write-Host "---"
 
     $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
+        $item = Get-Item -Path "$FilePath"
         # Changing both values triggers "Refresh" in Windows File Explorer
-        $item.CreationTime = [datetime]::ParseExact("$dcOld", "$datetimeFormat", $null) # We're using here the old value
+        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
