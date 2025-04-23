@@ -245,7 +245,7 @@ function Paste-Timestamps-Internal {
 }
 
 function Undo-Timestamps {
-    # todo guard
+    Guard-Undo-Clipboard
 
     $timestamps = Get-Content -Path "$undoPath"
     $filePath = $timestamps[0]
@@ -278,7 +278,35 @@ function Guard-Clipboard {
         }
     }
 
-    $message = Get-Message
+    Show-Guard-Message "$(Get-Message)"
+}
+
+function Guard-Undo-Clipboard {
+    function Get-Message {
+        if (-Not (Test-Path -Path "$undoPath")) {
+            return "Timestamps undo clipboard empty. First paste timestamps."
+        }
+
+        $timestamps = Get-Content -Path "$undoPath"
+        if ($timestamps.Count -ne 3) {
+            return "Timestamps undo clipboard corrupted. Paste timestamps.  "
+        }
+
+        try {
+            [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
+            [datetime]::ParseExact($timestamps[2], "$datetimeFormat", $null) | Out-Null
+        } catch {
+            return "Timestamps undo clipboard corrupted. Paste timestamps.  "
+        }
+    }
+
+    Show-Guard-Message "$(Get-Message)"
+}
+
+function Show-Guard-Message {
+    param (
+        [string]$message
+    )
 
     if ($message) {
         if ($quiet) {
