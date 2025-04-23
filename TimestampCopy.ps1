@@ -15,7 +15,7 @@ $versionn = "2.1.0-preview.1"
 $appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
 $scriptPath = "$appdataPath\tscp.ps1"
 $iconPath = "$appdataPath\icon.ico"
-$clipFile = "$appdataPath\clip"
+$clipPath = "$appdataPath\clip"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
@@ -158,7 +158,7 @@ function Copy-Timestamps {
     Write-Host "Date Created:  $dc"
     Write-Host "Date Modified: $dm"
 
-    Set-Content -Path "$clipFile" -Value "$dc`n$dm"
+    Set-Content -Path "$clipPath" -Value "$dc`n$dm"
 
     Write-Host "---"
     Write-Host "Timestamps copied"
@@ -171,7 +171,7 @@ function Paste-Timestamps {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipFile"
+    $timestamps = Get-Content -Path "$clipPath"
     $dcNew = $timestamps[0]
     $dmNew = $timestamps[1]
 
@@ -203,7 +203,7 @@ function Paste-DateCreated {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipFile"
+    $timestamps = Get-Content -Path "$clipPath"
     $dcNew = $timestamps[0]
 
     $item = Get-Item -Path "$FilePath"
@@ -233,7 +233,7 @@ function Paste-DateModified {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipFile"
+    $timestamps = Get-Content -Path "$clipPath"
     $dmNew = $timestamps[1]
 
     $item = Get-Item -Path "$FilePath"
@@ -257,13 +257,13 @@ function Paste-DateModified {
 }
 
 function Guard-Clipboard {
-    if (-Not (Test-Path -Path "$clipFile")) {
+    if (-Not (Test-Path -Path "$clipPath")) {
         Write-Host "Timestamps clipboard empty."
         Pause-Script "exit"
         exit 0
     }
 
-    $timestamps = Get-Content -Path "$clipFile"
+    $timestamps = Get-Content -Path "$clipPath"
     if ($timestamps.Count -ne 2) {
         Write-Host "Timestamps clipboard corrupted. Copy new timestamps."
         Pause-Script "exit"
