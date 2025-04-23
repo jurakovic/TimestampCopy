@@ -14,7 +14,8 @@ $homepage = "https://github.com/jurakovic/timestamp-copy"
 $versionn = "2.1.0-preview.1"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$PSScriptRoot\tscp.ico"
-$clipPath = "$HOME\.tscp"
+$appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
+$clipPath = "$appdataPath\clip"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
@@ -73,9 +74,14 @@ function Install {
 
     $quietMode = If ($quiet) { "(Quiet Mode)" } Else { "" }
     Write-Host "Installing $quietMode..."
+    Setup-AppData
     Install-Internal -RootKey "$fRootKey"
     Install-Internal -RootKey "$dRootKey"
     Write-Host "Done"
+}
+
+function Setup-AppData {
+    New-Item -Path "$appdataPath" -ItemType Directory -Force | Out-Null
 }
 
 function Install-Internal {
@@ -121,7 +127,7 @@ function Uninstall {
     Write-Host "Uninstalling..."
     Uninstall-Internal -RootKey "$fRootKey"
     Uninstall-Internal -RootKey "$dRootKey"
-    Remove-Item -Force -Path "$clipPath" *> $null
+    Remove-Item -Recurse -Force -Path "$appdataPath" *> $null
     Write-Host "Done"
 }
 
