@@ -248,25 +248,34 @@ function Paste-DateModified {
 }
 
 function Guard-Clipboard {
-    if (-Not (Test-Path -Path "$clipPath")) {
-        Write-Host "Timestamps clipboard empty."
-        Pause-Script "exit"
-        exit 0
+    function Get-Message {
+        if (-Not (Test-Path -Path "$clipPath")) {
+            return "Timestamps clipboard empty. First copy timestamps.  "
+        }
+
+        $timestamps = Get-Content -Path "$clipPath"
+        if ($timestamps.Count -ne 2) {
+            return "Timestamps clipboard corrupted. Copy new timestamps."
+        }
+
+        try {
+            [datetime]::ParseExact($timestamps[0], "$datetimeFormat", $null) | Out-Null
+            [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
+        } catch {
+            return "Timestamps clipboard corrupted. Copy new timestamps."
+        }
     }
 
-    $timestamps = Get-Content -Path "$clipPath"
-    if ($timestamps.Count -ne 2) {
-        Write-Host "Timestamps clipboard corrupted. Copy new timestamps."
-        Pause-Script "exit"
-        exit 0
-    }
+    $message = Get-Message
 
-    try {
-        [datetime]::ParseExact($timestamps[0], "$datetimeFormat", $null) | Out-Null
-        [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
-    } catch {
-        Write-Host "Timestamps clipboard corrupted. Copy new timestamps."
-        Pause-Script "exit"
+    if ($message) {
+        if ($quiet) {
+            Add-Type -AssemblyName PresentationCore,PresentationFramework
+            [System.Windows.MessageBox]::Show("$message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+        } else {
+            Write-Host "$message"
+            Pause-Script "exit"
+        }
         exit 0
     }
 }
