@@ -3,6 +3,7 @@ Param(
     [switch][Alias('h')]$help,
     [switch][Alias('v')]$version,
     [switch][Alias('i')]$install,
+    [switch][Alias('q')]$quiet,
     [switch][Alias('u')]$uninstall,
     [string][Alias('a')]$action,
     [string]$path
@@ -27,6 +28,7 @@ function Show-Menu {
     Write-Host "  Timestamp Copy ($versionn)"
     Write-Host "                            "
     Write-Host "  [i] Install               "
+    Write-Host "  [q] Install (Quiet Mode)  "
     Write-Host "  [u] Uninstall             "
     Write-Host "                            "
     Write-Host "  [x] Quit                  "
@@ -47,6 +49,7 @@ function Perform-Action {
 
     switch ($Option) {
         "i" { Install }
+        "q" { $quiet=$true; Install }
         "u" { Uninstall }
         "x" { return }
         default { Write-Host "Unknown option: $Option" }
@@ -69,7 +72,8 @@ function Install {
         exit 1
     }
 
-    Write-Host "Installing..."
+    $quietMode = If ($quiet) { "(Quiet Mode)" } Else { "" }
+    Write-Host "Installing $quietMode..."
     Setup-AppData
     Install-Internal -RootKey "$fRootKey"
     Install-Internal -RootKey "$dRootKey"
@@ -115,8 +119,11 @@ function Add-MenuItem {
         [string]$Action
     )
 
+    $headless = if ($quiet) { "conhost.exe --headless " } else { "" }
+    $q = if ($quiet) { " -q" } else { "" }
+
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -action ""'$Action'"" -path ""'%1'""""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -action ""'$Action'"" -path ""'%1'""$q""""" /f | Out-Null
 }
 
 function Uninstall {
@@ -179,7 +186,7 @@ function Paste-Timestamps {
     Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
     Write-Host "---"
 
-    $applyChanges = Read-Host "Apply changes? (y/N)"
+    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
@@ -210,7 +217,7 @@ function Paste-DateCreated {
     Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmOld"
     Write-Host "---"
 
-    $applyChanges = Read-Host "Apply changes? (y/N)"
+    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         Write-Host "Done"
@@ -240,7 +247,7 @@ function Paste-DateModified {
     Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
     Write-Host "---"
 
-    $applyChanges = Read-Host "Apply changes? (y/N)"
+    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Write-Host "Done"
@@ -490,7 +497,10 @@ if ($uninstall) {
 
 if ($action -And $path) {
     Invoke-Expression "$($action) ""$($path)"""
-    Pause-Script
+
+    if (-Not $quiet) {
+        Pause-Script
+    }
     exit 0
 }
 
