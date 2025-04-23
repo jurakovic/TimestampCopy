@@ -16,6 +16,7 @@ $scriptPath = "$PSCommandPath"
 $iconPath = "$PSScriptRoot\tscp.ico"
 $appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
 $clipPath = "$appdataPath\clip"
+$backPath = "$appdataPath\backup"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
@@ -95,6 +96,7 @@ function Install-Internal {
     Add-MenuItem -Key "$itemPath\020PasteTimestamps" -Label "Paste" -Action "Paste-Timestamps"
     Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "Paste-DateCreated"
     Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "Paste-DateModified"
+    Add-MenuItem -Key "$itemPath\050UndoTimestamps" -Label "Undo" -Action "Undo-Timestamps"
 }
 
 function Add-MenuRoot {
@@ -187,6 +189,7 @@ function Paste-Timestamps {
     if ($applyChanges -ieq "y") {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
@@ -219,6 +222,7 @@ function Paste-DateCreated {
         # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmOld", "$datetimeFormat", $null) # We're using here the old value
+        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
@@ -251,10 +255,16 @@ function Paste-DateModified {
         # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcOld", "$datetimeFormat", $null) # We're using here the old value
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        Set-Content -Path "$backPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
     }
+}
+
+function Undo-Timestamps {
+    Add-Type -AssemblyName PresentationCore,PresentationFramework
+    [System.Windows.MessageBox]::Show("Undo (todo)           ", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
 }
 
 function Guard-Clipboard {
