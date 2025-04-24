@@ -216,6 +216,8 @@ function Copy-Timestamps {
         [string]$FilePath
     )
 
+    Path-Exists $FilePath
+
     $item = Get-Item -Path "$FilePath"
     $dc = $item.CreationTime.ToString("$datetimeFormat")
     $dm = $item.LastWriteTime.ToString("$datetimeFormat")
@@ -235,6 +237,7 @@ function Paste-Timestamps {
         [string]$FilePath
     )
 
+    Path-Exists $FilePath
     Guard-Clipboard
 
     $timestamps = Get-Clipboard-Content -Path "$clipPath"
@@ -253,6 +256,7 @@ function Paste-DateCreated {
         [string]$FilePath
     )
 
+    Path-Exists $FilePath
     Guard-Clipboard
 
     $timestamps = Get-Clipboard-Content -Path "$clipPath"
@@ -270,6 +274,7 @@ function Paste-DateModified {
         [string]$FilePath
     )
 
+    Path-Exists $FilePath
     Guard-Clipboard
 
     $timestamps = Get-Clipboard-Content -Path "$clipPath"
@@ -346,6 +351,16 @@ function Get-Clipboard-Content {
     $encoded = Get-Content -Path "$Path"
     $decoded = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded))
     return $decoded -split "`n"
+}
+
+function Path-Exists {
+    param (
+        [string]$FilePath
+    )
+
+    if (-Not (Test-Path -Path "$FilePath")) {
+        Show-Guard-Message "Cannot find path '$FilePath' because it does not exist."
+    }
 }
 
 function Guard-Clipboard {
