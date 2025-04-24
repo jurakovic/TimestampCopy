@@ -259,48 +259,42 @@ function Undo-Timestamps {
     Paste-Timestamps-Internal "$filePath" "$dcOld" "$dcNew" "$dmOld" "$dmNew"
 }
 
+##### Helper FUnctions
+
 function Guard-Clipboard {
-    function Get-Message {
-        if (-Not (Test-Path -Path "$clipPath")) {
-            return "Timestamps clipboard empty. First copy timestamps.  "
-        }
-
-        $timestamps = Get-Content -Path "$clipPath"
-        if ($timestamps.Count -ne 2) {
-            return "Timestamps clipboard corrupted. Copy new timestamps."
-        }
-
-        try {
-            [datetime]::ParseExact($timestamps[0], "$datetimeFormat", $null) | Out-Null
-            [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
-        } catch {
-            return "Timestamps clipboard corrupted. Copy new timestamps."
-        }
+    if (-Not (Test-Path -Path "$clipPath")) {
+        Show-Guard-Message "Timestamps clipboard empty. First copy timestamps.  "
     }
 
-    Show-Guard-Message "$(Get-Message)"
+    $timestamps = Get-Content -Path "$clipPath"
+    if ($timestamps.Count -ne 2) {
+        Show-Guard-Message "Timestamps clipboard corrupted. Copy new timestamps."
+    }
+
+    try {
+        [datetime]::ParseExact($timestamps[0], "$datetimeFormat", $null) | Out-Null
+        [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
+    } catch {
+        Show-Guard-Message "Timestamps clipboard corrupted. Copy new timestamps."
+    }
 }
 
 function Guard-Undo-Clipboard {
-    function Get-Message {
-        if (-Not (Test-Path -Path "$undoPath")) {
-            return "Timestamps undo clipboard empty. First paste timestamps."
-        }
-
-        $timestamps = Get-Content -Path "$undoPath"
-        if ($timestamps.Count -ne 3) {
-            return "Timestamps undo clipboard corrupted. Paste timestamps.  "
-        }
-
-        try {
-            [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
-            [datetime]::ParseExact($timestamps[2], "$datetimeFormat", $null) | Out-Null
-        } catch {
-            return "Timestamps undo clipboard corrupted. Paste timestamps.  "
-        }
+    if (-Not (Test-Path -Path "$undoPath")) {
+        Show-Guard-Message "Timestamps undo clipboard empty. First paste timestamps."
     }
 
-    Show-Guard-Message "$(Get-Message)"
+    $timestamps = Get-Content -Path "$undoPath"
+    if ($timestamps.Count -ne 3) {
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+    }
+
+    try {
+        [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
+        [datetime]::ParseExact($timestamps[2], "$datetimeFormat", $null) | Out-Null
+    } catch {
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+    }
 }
 
 function Show-Guard-Message {
@@ -308,16 +302,14 @@ function Show-Guard-Message {
         [string]$message
     )
 
-    if ($message) {
-        if ($quiet) {
-            Add-Type -AssemblyName PresentationCore,PresentationFramework
-            [System.Windows.MessageBox]::Show("$message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
-        } else {
-            Write-Host "$message"
-            Pause-Script "exit"
-        }
-        exit 0
+    if ($quiet) {
+        Add-Type -AssemblyName PresentationCore,PresentationFramework
+        [System.Windows.MessageBox]::Show("$message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+    } else {
+        Write-Host "$message"
+        Pause-Script "exit"
     }
+    exit 0
 }
 
 function Highlight-Diff {
