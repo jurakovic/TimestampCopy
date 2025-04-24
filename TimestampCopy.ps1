@@ -1,12 +1,12 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
-    [switch][Alias('h')]$help,
-    [switch][Alias('v')]$version,
-    [switch][Alias('i')]$install,
-    [switch][Alias('q')]$quiet,
-    [switch][Alias('u')]$uninstall,
-    [string][Alias('a')]$action,
-    [string]$path
+    [switch][Alias('h')]$Help,
+    [switch][Alias('v')]$Version,
+    [switch][Alias('i')]$Install,
+    [switch][Alias('q')]$Quiet,
+    [switch][Alias('u')]$Uninstall,
+    [string][Alias('a')]$Action,
+    [string]$FilePath
 )
 
 ##### Constants
@@ -50,7 +50,7 @@ function Perform-Action {
 
     switch ($Option) {
         "i" { Install }
-        "q" { $quiet=$true; Install }
+        "q" { $Quiet=$true; Install }
         "u" { Uninstall }
         "x" { return }
         default { Write-Host "Unknown option: $Option" }
@@ -73,7 +73,7 @@ function Install {
         exit 1
     }
 
-    $quietMode = If ($quiet) { "(Quiet Mode)" } Else { "" }
+    $quietMode = If ($Quiet) { "(Quiet Mode)" } Else { "" }
     Write-Host "Installing $quietMode..."
     Setup-AppData
     Install-Internal -RootKey "$fRootKey"
@@ -90,25 +90,24 @@ function Install-Internal {
         [string]$RootKey
     )
 
-    $itemPath = "$RootKey\shell"
-    Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -Icon "$iconPath"
-    Add-MenuItem -Key "$itemPath\010CopyTimestamps" -Label "Copy" -Action "Copy-Timestamps"
-    Add-MenuItem -Key "$itemPath\020PasteTimestamps" -Label "Paste" -Action "Paste-Timestamps"
-    Add-MenuItem -Key "$itemPath\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "Paste-DateCreated"
-    Add-MenuItem -Key "$itemPath\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "Paste-DateModified"
-    Add-MenuItem -Key "$itemPath\050UndoTimestamps" -Label "Undo" -Action "Undo-Timestamps"
+    Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -IconPath "$iconPath"
+    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy-Timestamps"
+    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste-Timestamps"
+    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "Paste-DateCreated"
+    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "Paste-DateModified"
+    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo-Timestamps"
 }
 
 function Add-MenuRoot {
     param (
         [string]$Key,
         [string]$Label,
-        [string]$Icon
+        [string]$IconPath
     )
 
     reg.exe add "$Key" /v MUIVerb /d "$Label" /f | Out-Null
     reg.exe add "$Key" /v SubCommands /f | Out-Null
-    reg.exe add "$Key" /v Icon /d "$Icon" /f | Out-Null
+    reg.exe add "$Key" /v Icon /d "$IconPath" /f | Out-Null
 }
 
 function Add-MenuItem {
@@ -118,11 +117,11 @@ function Add-MenuItem {
         [string]$Action
     )
 
-    $headless = if ($quiet) { "conhost.exe --headless " } else { "" }
-    $q = if ($quiet) { " -q" } else { "" }
+    $headless = if ($Quiet) { "conhost.exe --headless " } else { "" }
+    $q = if ($Quiet) { " -q" } else { "" }
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -action ""'$Action'"" -path ""'%1'""$q""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -Action ""'$Action'"" -FilePath ""'%1'""$q""""" /f | Out-Null
 }
 
 function Uninstall {
@@ -231,7 +230,7 @@ function Paste-Timestamps-Internal {
     Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
     Write-Host "---"
 
-    $applyChanges = if ($quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
+    $applyChanges = if ($Quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
     if ($applyChanges -ieq "y") {
         $item = Get-Item -Path "$FilePath"
         # Changing both values triggers "Refresh" in Windows File Explorer
@@ -278,7 +277,7 @@ function Get-Clipboard-Content {
 
     $encoded = Get-Content -Path "$Path"
     $decoded = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded))
-    return $decoded.Split("`n")
+    return $decoded -split "`n"
 }
 
 function Guard-Clipboard {
@@ -333,14 +332,14 @@ function Guard-Undo-Clipboard {
 
 function Show-Guard-Message {
     param (
-        [string]$message
+        [string]$Message
     )
 
-    if ($quiet) {
+    if ($Quiet) {
         Add-Type -AssemblyName PresentationCore,PresentationFramework
-        [System.Windows.MessageBox]::Show("$message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+        [System.Windows.MessageBox]::Show("$Message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
     } else {
-        Write-Host "$message"
+        Write-Host "$Message"
         Pause-Script "exit"
     }
     exit 0
@@ -395,30 +394,30 @@ function Highlight-Diff {
 
 ##### Main
 
-if ($help) {
+if ($Help) {
     Write-Host "For help visit $homepage"
     exit 0
 }
 
-if ($version) {
+if ($Version) {
     Write-Host "$versionn"
     exit 0
 }
 
-if ($install) {
+if ($Install) {
     Install
     exit 0
 }
 
-if ($uninstall) {
+if ($Uninstall) {
     Uninstall
     exit 0
 }
 
-if ($action -And $path) {
-    Invoke-Expression "$($action) ""$($path)"""
+if ($Action -And $FilePath) {
+    Invoke-Expression "$($Action) ""$($FilePath)"""
 
-    if (-Not $quiet) {
+    if (-Not $Quiet) {
         Pause-Script
     }
     exit 0
