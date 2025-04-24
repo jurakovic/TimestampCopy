@@ -157,7 +157,7 @@ function Copy-Timestamps {
     Write-Host "Date Created:  $dc"
     Write-Host "Date Modified: $dm"
 
-    Set-Content -Path "$clipPath" -Value "$dc`n$dm"
+    Set-Clipboard-Content -Path "$clipPath" -Value "$dc`n$dm"
 
     Write-Host "---"
     Write-Host "Timestamps copied"
@@ -170,7 +170,7 @@ function Paste-Timestamps {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipPath"
+    $timestamps = Get-Clipboard-Content -Path "$clipPath"
     $dcNew = $timestamps[0]
     $dmNew = $timestamps[1]
 
@@ -188,7 +188,7 @@ function Paste-DateCreated {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipPath"
+    $timestamps = Get-Clipboard-Content -Path "$clipPath"
     $dcNew = $timestamps[0]
 
     $item = Get-Item -Path "$FilePath"
@@ -205,7 +205,7 @@ function Paste-DateModified {
 
     Guard-Clipboard
 
-    $timestamps = Get-Content -Path "$clipPath"
+    $timestamps = Get-Clipboard-Content -Path "$clipPath"
     $dmNew = $timestamps[1]
 
     $item = Get-Item -Path "$FilePath"
@@ -237,7 +237,7 @@ function Paste-Timestamps-Internal {
         # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
-        Set-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
+        Set-Clipboard-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
         Write-Host "Done"
     } else {
         Write-Host "Canceled"
@@ -247,7 +247,7 @@ function Paste-Timestamps-Internal {
 function Undo-Timestamps {
     Guard-Undo-Clipboard
 
-    $timestamps = Get-Content -Path "$undoPath"
+    $timestamps = Get-Clipboard-Content -Path "$undoPath"
     $filePath = $timestamps[0]
     $dcNew = $timestamps[1]
     $dmNew = $timestamps[2]
@@ -261,12 +261,39 @@ function Undo-Timestamps {
 
 ##### Helper FUnctions
 
+function Set-Clipboard-Content {
+    param (
+        [string]$Path,
+        [string]$Value
+    )
+
+    $encoded  = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$Value"))
+    Set-Content -Path "$Path" -Value "$encoded"
+}
+
+function Get-Clipboard-Content {
+    param (
+        [string]$Path
+    )
+
+    $encoded = Get-Content -Path "$Path"
+    $decoded = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded))
+    return $decoded.Split("`n")
+}
+
 function Guard-Clipboard {
     if (-Not (Test-Path -Path "$clipPath")) {
         Show-Guard-Message "Timestamps clipboard empty. First copy timestamps.  "
     }
 
-    $timestamps = Get-Content -Path "$clipPath"
+    try {
+        $encoded = Get-Content -Path "$clipPath"
+        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded)) | Out-Null
+    } catch {
+        Show-Guard-Message "Timestamps clipboard corrupted. Copy new timestamps."
+    }
+
+    $timestamps = Get-Clipboard-Content -Path "$clipPath"
     if ($timestamps.Count -ne 2) {
         Show-Guard-Message "Timestamps clipboard corrupted. Copy new timestamps."
     }
@@ -284,7 +311,14 @@ function Guard-Undo-Clipboard {
         Show-Guard-Message "Timestamps undo clipboard empty. First paste timestamps."
     }
 
-    $timestamps = Get-Content -Path "$undoPath"
+    try {
+        $encoded = Get-Content -Path "$undoPath"
+        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded)) | Out-Null
+    } catch {
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+    }
+
+    $timestamps = Get-Clipboard-Content -Path "$undoPath"
     if ($timestamps.Count -ne 3) {
         Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
     }
