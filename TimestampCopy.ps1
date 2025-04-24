@@ -5,8 +5,11 @@ Param(
     [switch][Alias('i')]$Install,
     [switch][Alias('q')]$Quiet,
     [switch][Alias('u')]$Uninstall,
-    [string][Alias('a')]$Action,
-    [string]$FilePath
+    [string][Alias('c')]$Copy,
+    [string][Alias('p')]$Paste,
+    [string][Alias('pc')]$PasteDateCreated,
+    [string][Alias('pm')]$PasteDateModified,
+    [switch][Alias('z')]$Undo
 )
 
 ##### Constants
@@ -91,11 +94,11 @@ function Install-Internal {
     )
 
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -IconPath "$iconPath"
-    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy-Timestamps"
-    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste-Timestamps"
-    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "Paste-DateCreated"
-    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "Paste-DateModified"
-    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo-Timestamps"
+    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy '%1'"
+    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste '%1'"
+    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "PasteDateCreated '%1'"
+    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "PasteDateModified '%1'"
+    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo"
 }
 
 function Add-MenuRoot {
@@ -121,7 +124,7 @@ function Add-MenuItem {
     $q = if ($Quiet) { " -q" } else { "" }
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -Action ""'$Action'"" -FilePath ""'%1'""$q""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -$Action$q""""" /f | Out-Null
 }
 
 function Uninstall {
@@ -414,8 +417,44 @@ if ($Uninstall) {
     exit 0
 }
 
-if ($Action -And $FilePath) {
-    Invoke-Expression "$($Action) ""$($FilePath)"""
+if ($Copy) {
+    Copy-Timestamps -FilePath "$Copy"
+
+    if (-Not $Quiet) {
+        Pause-Script
+    }
+    exit 0
+}
+
+if ($Paste) {
+    Paste-Timestamps -FilePath "$Paste"
+
+    if (-Not $Quiet) {
+        Pause-Script
+    }
+    exit 0
+}
+
+if ($PasteDateCreated) {
+    Paste-DateCreated -FilePath "$PasteDateCreated"
+
+    if (-Not $Quiet) {
+        Pause-Script
+    }
+    exit 0
+}
+
+if ($PasteDateModified) {
+    Paste-DateModified -FilePath "$PasteDateModified"
+
+    if (-Not $Quiet) {
+        Pause-Script
+    }
+    exit 0
+}
+
+if ($Undo) {
+    Undo-Timestamps
 
     if (-Not $Quiet) {
         Pause-Script
