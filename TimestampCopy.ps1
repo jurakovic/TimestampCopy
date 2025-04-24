@@ -13,6 +13,7 @@ Param(
 )
 
 ##### Constants
+
 $homepage = "https://github.com/jurakovic/timestamp-copy"
 $versionn = "2.1.0-preview.1"
 $scriptPath = "$PSCommandPath"
@@ -23,6 +24,62 @@ $undoPath = "$appdataPath\clip-undo"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
+
+##### Main
+
+function Main {
+    if ($Help) {
+        Write-Host "For help visit $homepage"
+        exit 0
+    }
+
+    if ($Version) {
+        Write-Host "$versionn"
+        exit 0
+    }
+
+    if ($Install) {
+        Install
+        exit 0
+    }
+
+    if ($Uninstall) {
+        Uninstall
+        exit 0
+    }
+
+    if ($Copy) {
+        Copy-Timestamps -FilePath "$Copy"
+        Pause-Script
+        exit 0
+    }
+
+    if ($Paste) {
+        Paste-Timestamps -FilePath "$Paste"
+        Pause-Script
+        exit 0
+    }
+
+    if ($PasteDateCreated) {
+        Paste-DateCreated -FilePath "$PasteDateCreated"
+        Pause-Script
+        exit 0
+    }
+
+    if ($PasteDateModified) {
+        Paste-DateModified -FilePath "$PasteDateModified"
+        Pause-Script
+        exit 0
+    }
+
+    if ($Undo) {
+        Undo-Timestamps
+        Pause-Script
+        exit 0
+    }
+
+    Show-Menu
+}
 
 ##### Install/Uninstall Functions
 
@@ -77,19 +134,19 @@ function Install {
         exit 1
     }
 
-    $quietMode = If ($Quiet) { "(Quiet Mode)" } Else { "" }
-    Write-Host "Installing $quietMode..."
-    Setup-AppData
-    Install-Internal -RootKey "$fRootKey"
-    Install-Internal -RootKey "$dRootKey"
+    $quietMode = If ($Quiet) { " (Quiet Mode)" } Else { "" }
+    Write-Host "Installing$quietMode..."
+    Create-AppData
+    Add-ContextMenu -RootKey "$fRootKey"
+    Add-ContextMenu -RootKey "$dRootKey"
     Write-Host "Done"
 }
 
-function Setup-AppData {
+function Create-AppData {
     New-Item -Path "$appdataPath" -ItemType Directory -Force | Out-Null
 }
 
-function Install-Internal {
+function Add-ContextMenu {
     param (
         [string]$RootKey
     )
@@ -130,13 +187,13 @@ function Add-MenuItem {
 
 function Uninstall {
     Write-Host "Uninstalling..."
-    Uninstall-Internal -RootKey "$fRootKey"
-    Uninstall-Internal -RootKey "$dRootKey"
+    Remove-ContextMenu -RootKey "$fRootKey"
+    Remove-ContextMenu -RootKey "$dRootKey"
     Remove-Item -Recurse -Force -Path "$appdataPath" *> $null
     Write-Host "Done"
 }
 
-function Uninstall-Internal {
+function Remove-ContextMenu {
     param (
         [string]$RootKey
     )
@@ -395,56 +452,4 @@ function Highlight-Diff {
     }
 }
 
-##### Main
-
-if ($Help) {
-    Write-Host "For help visit $homepage"
-    exit 0
-}
-
-if ($Version) {
-    Write-Host "$versionn"
-    exit 0
-}
-
-if ($Install) {
-    Install
-    exit 0
-}
-
-if ($Uninstall) {
-    Uninstall
-    exit 0
-}
-
-if ($Copy) {
-    Copy-Timestamps -FilePath "$Copy"
-    Pause-Script
-    exit 0
-}
-
-if ($Paste) {
-    Paste-Timestamps -FilePath "$Paste"
-    Pause-Script
-    exit 0
-}
-
-if ($PasteDateCreated) {
-    Paste-DateCreated -FilePath "$PasteDateCreated"
-    Pause-Script
-    exit 0
-}
-
-if ($PasteDateModified) {
-    Paste-DateModified -FilePath "$PasteDateModified"
-    Pause-Script
-    exit 0
-}
-
-if ($Undo) {
-    Undo-Timestamps
-    Pause-Script
-    exit 0
-}
-
-Show-Menu
+Main
