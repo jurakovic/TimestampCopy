@@ -40,10 +40,8 @@ function Show-Menu {
     $option = Read-Host "Choose option"
     Clear-Host
     Perform-Action -Option $option
-    if ($option -ine "x") {
-        Pause-Script "continue"
-        Show-Menu
-    }
+    Pause-Script "continue"
+    Show-Menu
 }
 
 function Perform-Action {
@@ -55,7 +53,7 @@ function Perform-Action {
         "i" { Install }
         "q" { $Quiet=$true; Install }
         "u" { Uninstall }
-        "x" { return }
+        "x" { exit 0 }
         default { Write-Host "Unknown option: $Option" }
     }
 }
@@ -64,15 +62,18 @@ function Pause-Script {
     param (
         [string]$Option = "exit"
     )
-    Write-Host -NoNewLine "Press any key to $Option..."
-    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+
+    if (-Not $Quiet) {
+        Write-Host -NoNewLine "Press any key to $Option..."
+        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    }
 }
 
 function Install {
     net session *> $null
     if (-Not $?) {
         Write-Host "Not running as Admin"
-        Pause-Script "exit"
+        Pause-Script
         exit 1
     }
 
@@ -154,13 +155,12 @@ function Copy-Timestamps {
     $dc = $item.CreationTime.ToString("$datetimeFormat")
     $dm = $item.LastWriteTime.ToString("$datetimeFormat")
 
+    Set-Clipboard-Content -Path "$clipPath" -Value "$dc`n$dm"
+
     Write-Host "File/Folder:   $FilePath"
     Write-Host "---"
     Write-Host "Date Created:  $dc"
     Write-Host "Date Modified: $dm"
-
-    Set-Clipboard-Content -Path "$clipPath" -Value "$dc`n$dm"
-
     Write-Host "---"
     Write-Host "Timestamps copied"
 }
@@ -261,7 +261,7 @@ function Undo-Timestamps {
     Paste-Timestamps-Internal "$filePath" "$dcOld" "$dcNew" "$dmOld" "$dmNew"
 }
 
-##### Helper FUnctions
+##### Helper Functions
 
 function Set-Clipboard-Content {
     param (
@@ -285,7 +285,7 @@ function Get-Clipboard-Content {
 
 function Guard-Clipboard {
     if (-Not (Test-Path -Path "$clipPath")) {
-        Show-Guard-Message "Timestamps clipboard empty. First copy timestamps.  "
+        Show-Guard-Message "Timestamps clipboard empty. Copy new timestamps.    "
     }
 
     try {
@@ -310,26 +310,26 @@ function Guard-Clipboard {
 
 function Guard-Undo-Clipboard {
     if (-Not (Test-Path -Path "$undoPath")) {
-        Show-Guard-Message "Timestamps undo clipboard empty. First paste timestamps."
+        Show-Guard-Message "Timestamps undo clipboard empty. Paste some timestamps.   "
     }
 
     try {
         $encoded = Get-Content -Path "$undoPath"
         [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encoded)) | Out-Null
     } catch {
-        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste new timestamps."
     }
 
     $timestamps = Get-Clipboard-Content -Path "$undoPath"
     if ($timestamps.Count -ne 3) {
-        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste new timestamps."
     }
 
     try {
         [datetime]::ParseExact($timestamps[1], "$datetimeFormat", $null) | Out-Null
         [datetime]::ParseExact($timestamps[2], "$datetimeFormat", $null) | Out-Null
     } catch {
-        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste timestamps.  "
+        Show-Guard-Message "Timestamps undo clipboard corrupted. Paste new timestamps."
     }
 }
 
@@ -343,9 +343,9 @@ function Show-Guard-Message {
         [System.Windows.MessageBox]::Show("$Message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
     } else {
         Write-Host "$Message"
-        Pause-Script "exit"
+        Pause-Script
     }
-    exit 0
+    exit 1
 }
 
 function Highlight-Diff {
@@ -419,46 +419,31 @@ if ($Uninstall) {
 
 if ($Copy) {
     Copy-Timestamps -FilePath "$Copy"
-
-    if (-Not $Quiet) {
-        Pause-Script
-    }
+    Pause-Script
     exit 0
 }
 
 if ($Paste) {
     Paste-Timestamps -FilePath "$Paste"
-
-    if (-Not $Quiet) {
-        Pause-Script
-    }
+    Pause-Script
     exit 0
 }
 
 if ($PasteDateCreated) {
     Paste-DateCreated -FilePath "$PasteDateCreated"
-
-    if (-Not $Quiet) {
-        Pause-Script
-    }
+    Pause-Script
     exit 0
 }
 
 if ($PasteDateModified) {
     Paste-DateModified -FilePath "$PasteDateModified"
-
-    if (-Not $Quiet) {
-        Pause-Script
-    }
+    Pause-Script
     exit 0
 }
 
 if ($Undo) {
     Undo-Timestamps
-
-    if (-Not $Quiet) {
-        Pause-Script
-    }
+    Pause-Script
     exit 0
 }
 
