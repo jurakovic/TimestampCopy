@@ -38,6 +38,10 @@ function Main {
         exit 0
     }
 
+    if ($(@($Install, $Uninstall | Where-Object { $_ }).Count) -ge 2) {
+        Show-Guard-Message "Parameters -Install, -Uninstall cannot be used together."
+    }
+
     if ($Install) {
         Install
         exit 0
@@ -46,6 +50,10 @@ function Main {
     if ($Uninstall) {
         Uninstall
         exit 0
+    }
+
+    if ($(@($Copy, $Paste, $PasteDateCreated, $PasteDateModified, $Undo | Where-Object { $_ }).Count) -ge 2) {
+        Show-Guard-Message "Parameters -Copy, -Paste, -PasteDateCreated, -PasteDateModified, -Undo cannot be used together."
     }
 
     if ($Copy) {
