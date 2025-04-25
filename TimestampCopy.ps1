@@ -26,6 +26,7 @@ $clipPath = "$appdataPath\clip"
 $undoPath = "$appdataPath\clip-undo"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
+$lRootKey = "HKEY_CLASSES_ROOT\lnkfile\shell\TimestampCopy" # otherwise it will change target timestamps
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
 ##### Main
@@ -155,6 +156,7 @@ function Install {
     Create-AppData
     Add-ContextMenu -RootKey "$fRootKey" -ScriptMode "$ScriptMode"
     Add-ContextMenu -RootKey "$dRootKey" -ScriptMode "$ScriptMode"
+    Add-ContextMenu -RootKey "$lRootKey" -ScriptMode "$ScriptMode"
     Write-Host "Done" -ForegroundColor Green
 }
 
@@ -206,6 +208,7 @@ function Uninstall {
     Write-Host "Uninstalling..."
     Remove-ContextMenu -RootKey "$fRootKey"
     Remove-ContextMenu -RootKey "$dRootKey"
+    Remove-ContextMenu -RootKey "$lRootKey"
     Remove-Item -Recurse -Force -Path "$appdataPath" *> $null
     Write-Host "Done" -ForegroundColor Green
 }
