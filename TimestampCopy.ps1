@@ -3,14 +3,15 @@ Param(
     [switch][Alias('h')]$Help,
     [switch][Alias('v')]$Version,
     [switch][Alias('i')]$Install,
+    [switch][Alias('b')]$InstallBackgroundMode,
     [switch][Alias('u')]$Uninstall,
     [string][Alias('c')]$Copy,
     [string][Alias('p')]$Paste,
     [string][Alias('pc')]$PasteDateCreated,
     [string][Alias('pm')]$PasteDateModified,
     [switch][Alias('z')]$Undo,
-    [ValidateSet("Terminal","Standalone","Hidden")][string][Alias('m')]$ScriptMode = "Terminal", # in Terminal, no "confirm to exit" messages
-    [switch][Alias('q')]$Quiet, # write output text or not, only for Terminal or Standalone mode
+    [ValidateSet("Terminal","Standalone","Background")][string][Alias('m')]$ScriptMode = "Terminal",
+    [switch][Alias('q')]$Quiet,
     [switch][Alias('y')]$SkipConfirm
 )
 
@@ -40,12 +41,17 @@ function Main {
         exit 0
     }
 
-    if ($(@($Install, $Uninstall | Where-Object { $_ }).Count) -ge 2) {
-        Show-Guard-Message "Parameters -Install, -Uninstall cannot be used together."
+    if ($(@($Install, $InstallBackgroundMode, $Uninstall | Where-Object { $_ }).Count) -ge 2) {
+        Show-Guard-Message "Parameters -Install, -InstallBackgroundMode, -Uninstall cannot be used together."
     }
 
     if ($Install) {
         Install -ScriptMode "Standalone"
+        exit 0
+    }
+
+    if ($InstallBackgroundMode) {
+        Install -ScriptMode "Background"
         exit 0
     }
 
@@ -88,7 +94,7 @@ function Main {
         exit 0
     }
 
-    $ScriptMode = "Standalone"
+    $ScriptMode = "Standalone" # to show "Pause-Script" message
     Show-Menu
 }
 
@@ -98,13 +104,13 @@ function Show-Menu {
     while ($true) {
         Clear-Host
         Write-Host ""
-        Write-Host "  Timestamp Copy ($versionn)"
-        Write-Host "                            "
-        Write-Host "  [i] Install               " # Standalone mode
-        Write-Host "  [m] Install (Hidden Mode) " # Hidden mode
-        Write-Host "  [u] Uninstall             "
-        Write-Host "                            "
-        Write-Host "  [q] Quit                  "
+        Write-Host "  Timestamp Copy ($versionn)    "
+        Write-Host "                                "
+        Write-Host "  [i] Install                   " # Standalone mode
+        Write-Host "  [b] Install (Background Mode) " # Background mode
+        Write-Host "  [u] Uninstall                 "
+        Write-Host "                                "
+        Write-Host "  [q] Quit                      "
         Write-Host ""
         $option = Read-Host "Choose option"
         Clear-Host
@@ -120,7 +126,7 @@ function Perform-Action {
 
     switch ($Option) {
         "i" { Install -ScriptMode "Standalone" }
-        "m" { Install -ScriptMode "Hidden"     }
+        "b" { Install -ScriptMode "Background" }
         "u" { Uninstall }
         "q" { exit 0 }
         default { Write-Host "Unknown option: $Option" }
@@ -150,8 +156,8 @@ function Install {
         exit 1
     }
 
-    $hiddenMode = If ($ScriptMode -ieq "Hidden") { " (Hidden Mode)" } Else { "" }
-    Write-Host "Installing$hiddenMode..."
+    $mode = If ($ScriptMode -ieq "Background") { " (Background Mode)" } Else { "" }
+    Write-Host "Installing$mode..."
     Create-AppData
     Add-ContextMenu -RootKey "$fRootKey" -ScriptMode "$ScriptMode"
     Add-ContextMenu -RootKey "$dRootKey" -ScriptMode "$ScriptMode"
@@ -196,7 +202,7 @@ function Add-MenuItem {
         [string]$ScriptMode
     )
 
-    $headless = if ($ScriptMode -ieq "Hidden") { "conhost.exe --headless " } else { "" }
+    $headless = if ($ScriptMode -ieq "Background") { "conhost.exe --headless " } else { "" }
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
     reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -ScriptMode '$ScriptMode' -$Action""""" /f | Out-Null
@@ -316,7 +322,7 @@ function Paste-Timestamps-Internal {
         Write-Host "---"
     }
 
-    $applyChanges = if ($SkipConfirm -or $ScriptMode -ieq "Hidden") { "y" } else { Read-Host "Apply changes? (y/N)" }
+    $applyChanges = if ($SkipConfirm -or $ScriptMode -ieq "Background") { "y" } else { Read-Host "Apply changes? (y/N)" }
     $message = ""
 
     if ($applyChanges -ieq "y") {
@@ -437,7 +443,7 @@ function Show-Guard-Message {
         [string]$Message
     )
 
-    if ($ScriptMode -ieq "Hidden") {
+    if ($ScriptMode -ieq "Background") {
         Add-Type -AssemblyName PresentationCore,PresentationFramework
         [System.Windows.MessageBox]::Show("$Message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
     } elseif (-Not $Quiet) {
