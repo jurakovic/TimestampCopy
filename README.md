@@ -100,10 +100,11 @@ This script is provided **as-is**, without any warranties or guarantees of fitne
 
 ---
 
-### Old Releases
-
-- [v1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0): Initial [tscp.sh](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use.
-- [v2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1): Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment.
+> #### Previous Releases
+>
+> - <small>[v1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0): Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use.</small>  
+> - <small>[v2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1): Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment.</small>  
+> - <small>[v2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0): Complete rewrite of the original Bash script in native PowerShell syntax.</small>  
 
 ---
 
