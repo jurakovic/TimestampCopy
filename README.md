@@ -1,46 +1,55 @@
 ﻿
 # Timestamp Copy
 
-Timestamps Copy is a lightweight PowerShell script that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
+[`TimestampsCopy.ps1`](./TimestampCopy.ps1) is PowerShell script that integrates directly into the Windows File Explorer context menu, enabling you to **copy** and **paste** file and folder timestamps with ease.
 
 This solution is especially useful when you need to preserve or replicate Date Created and Date Modified values across files or folders – ideal for organizing backups, restoring files, or syncing metadata.
 
-### Latest Release
+![ContextMenu](img/contextmenu.png)  
+<sup>(Context Menu)</sup>
+
+### Download
 
 [![GitHub Release](https://img.shields.io/github/v/release/jurakovic/timestamp-copy?include_prereleases)](https://github.com/jurakovic/timestamp-copy/releases/latest)
 
-### Features
+### Usage <sub><sup>(Short)</sup></sub>
 
-#### Explorer Context Menu Integration
+#### Context Menu
 
-Adds convenient right-click options for both files and folders:
-
-![ContextMenu](img/contextmenu.png)
-
-#### Copy Mode
-
-Stores the selected file or folder's Date Created and Date Modified timestamps for reuse.
-
-#### Paste Mode
-
-Applies the previously copied timestamps to the currently selected file or folder.
-
-#### Selective Timestamp Paste
-
-Use the specific `Paste 'Date Created'` or `Paste 'Date Modified'` options to update only the desired timestamp.
-
-### Usage
-
-Right-click on a file or folder and choose `Copy` under the context menu.  
-This saves the timestamps to a temporary location ("clipboard").
+Right-click on a file or folder and choose `Copy` under the context menu. This stores the selected file or folder's Date Created and Date Modified timestamps to a temporary location for reuse.
 
 Right-click on another file or folder and choose:
 
-`Paste` – to apply both timestamps  
-`Paste 'Date Created'` – to apply only the Date Created  
-`Paste 'Date Modified'` – to apply only the Date Modified  
+`Paste` – to apply previously copied timestamps  
+`Paste "Date Created"` – to apply only the Date Created  
+`Paste "Date Modified"` – to apply only the Date Modified  
 
-Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the appropriate parameters (example screenshots below).
+Each `Paste` operation, before overwriting timestamps with "new" ones, stores the selected file or folder's path and current ("old") timestamps to a temporary location.  
+If you copy timestamps from a wrong file or folder and paste it to some file or folder, or you paste it to wrong file or folder, you can undo the operation by right-clicking on the file or folder and choosing `Undo` under the context menu.  
+
+The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation. `Undo` then does the same as `Paste` operation. It stores the *undo-ed* file or folder's path and current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.  
+If you choose `Undo` repeatedly, it will rotate the timestamps between the "old" and "new" values.  
+
+#### CLI
+
+The script is made to be run from the context menu, but it can also be run directly from the command line.
+
+```powershell
+# Copy timestamps
+.\TimestampCopy.ps1 -c "C:\Foo.txt"
+
+# Paste timestamps
+.\TimestampCopy.ps1 -p "D:\Bar.txt"
+
+# Paste Date Created
+.\TimestampCopy.ps1 -pc "D:\Bar.txt"
+
+# Paste Date Modified
+.\TimestampCopy.ps1 -pm "D:\Bar.txt"
+
+# Undo
+.\TimestampCopy.ps1 -z
+```
 
 ### Requirements
 
@@ -67,9 +76,10 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 
 	and then choose the option `i`
 	```text
-	Timestamp Copy (2.0.0)
+	Timestamp Copy (2.1.0-preview.1)
 
 	[i] Install
+	[b] Install (Background Mode)
 	[u] Uninstall
 
 	[q] Quit
@@ -82,7 +92,9 @@ Each entry runs the [`TimestampCopy.ps1`](TimestampCopy.ps1) script with the app
 	.\TimestampCopy.ps1 -i
 	```
 
-### Screenshots
+### Usage (Detailed)
+
+todo: all operations, variants, modes, validations, examples, etc.
 
 Copy  
 ![Copy](img/copy.png)
