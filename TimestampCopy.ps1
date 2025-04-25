@@ -3,13 +3,15 @@ Param(
     [switch][Alias('h')]$Help,
     [switch][Alias('v')]$Version,
     [switch][Alias('i')]$Install,
-    [switch][Alias('q')]$Quiet,
     [switch][Alias('u')]$Uninstall,
     [string][Alias('c')]$Copy,
     [string][Alias('p')]$Paste,
     [string][Alias('pc')]$PasteDateCreated,
     [string][Alias('pm')]$PasteDateModified,
-    [switch][Alias('z')]$Undo
+    [switch][Alias('z')]$Undo,
+    [ValidateSet("Terminal","Standalone","Hidden")][string][Alias('m')]$ScriptMode = "Terminal", # in Terminal, no "confirm to exit" messages
+    [switch][Alias('q')]$Quiet, # write output text or not, only for Terminal or Standalone mode
+    [switch][Alias('y')]$SkipConfirm
 )
 
 ##### Constants
@@ -43,7 +45,7 @@ function Main {
     }
 
     if ($Install) {
-        Install
+        Install -ScriptMode "Standalone"
         exit 0
     }
 
@@ -86,27 +88,29 @@ function Main {
         exit 0
     }
 
+    $ScriptMode = "Standalone"
     Show-Menu
 }
 
 ##### Install/Uninstall Functions
 
 function Show-Menu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "  Timestamp Copy ($versionn)"
-    Write-Host "                            "
-    Write-Host "  [i] Install               "
-    Write-Host "  [q] Install (Quiet Mode)  "
-    Write-Host "  [u] Uninstall             "
-    Write-Host "                            "
-    Write-Host "  [x] Quit                  "
-    Write-Host ""
-    $option = Read-Host "Choose option"
-    Clear-Host
-    Perform-Action -Option $option
-    Pause-Script "continue"
-    Show-Menu
+    while ($true) {
+        Clear-Host
+        Write-Host ""
+        Write-Host "  Timestamp Copy ($versionn)"
+        Write-Host "                            "
+        Write-Host "  [i] Install               " # Standalone mode
+        Write-Host "  [m] Install (Hidden Mode) " # Hidden mode
+        Write-Host "  [u] Uninstall             "
+        Write-Host "                            "
+        Write-Host "  [q] Quit                  "
+        Write-Host ""
+        $option = Read-Host "Choose option"
+        Clear-Host
+        Perform-Action -Option $option
+        Pause-Script "continue"
+    }
 }
 
 function Perform-Action {
@@ -115,10 +119,10 @@ function Perform-Action {
     )
 
     switch ($Option) {
-        "i" { Install }
-        "q" { $Quiet=$true; Install }
+        "i" { Install -ScriptMode "Standalone" }
+        "m" { Install -ScriptMode "Hidden"     }
         "u" { Uninstall }
-        "x" { exit 0 }
+        "q" { exit 0 }
         default { Write-Host "Unknown option: $Option" }
     }
 }
@@ -128,13 +132,17 @@ function Pause-Script {
         [string]$Option = "exit"
     )
 
-    if (-Not $Quiet) {
+    if ($ScriptMode -ieq "Standalone") {
         Write-Host -NoNewLine "Press any key to $Option..."
         $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
     }
 }
 
 function Install {
+    param (
+        [string]$ScriptMode
+    )
+
     net session *> $null
     if (-Not $?) {
         Write-Host "Not running as Admin"
@@ -142,11 +150,11 @@ function Install {
         exit 1
     }
 
-    $quietMode = If ($Quiet) { " (Quiet Mode)" } Else { "" }
-    Write-Host "Installing$quietMode..."
+    $hiddenMode = If ($ScriptMode -ieq "Hidden") { " (Hidden Mode)" } Else { "" }
+    Write-Host "Installing$hiddenMode..."
     Create-AppData
-    Add-ContextMenu -RootKey "$fRootKey"
-    Add-ContextMenu -RootKey "$dRootKey"
+    Add-ContextMenu -RootKey "$fRootKey" -ScriptMode "$ScriptMode"
+    Add-ContextMenu -RootKey "$dRootKey" -ScriptMode "$ScriptMode"
     Write-Host "Done"
 }
 
@@ -156,15 +164,16 @@ function Create-AppData {
 
 function Add-ContextMenu {
     param (
-        [string]$RootKey
+        [string]$RootKey,
+        [string]$ScriptMode
     )
 
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -IconPath "$iconPath"
-    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy '%1'"
-    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste '%1'"
-    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "PasteDateCreated '%1'"
-    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "PasteDateModified '%1'"
-    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo"
+    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "PasteDateCreated '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "PasteDateModified '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo" -ScriptMode "$ScriptMode"
 }
 
 function Add-MenuRoot {
@@ -183,14 +192,14 @@ function Add-MenuItem {
     param (
         [string]$Key,
         [string]$Label,
-        [string]$Action
+        [string]$Action,
+        [string]$ScriptMode
     )
 
-    $headless = if ($Quiet) { "conhost.exe --headless " } else { "" }
-    $q = if ($Quiet) { " -q" } else { "" }
+    $headless = if ($ScriptMode -ieq "Hidden") { "conhost.exe --headless " } else { "" }
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -$Action$q""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -ScriptMode '$ScriptMode' -$Action""""" /f | Out-Null
 }
 
 function Uninstall {
@@ -224,12 +233,14 @@ function Copy-Timestamps {
 
     Set-Clipboard-Content -Path "$clipPath" -Value "$dc`n$dm"
 
-    Write-Host "File/Folder:   $FilePath"
-    Write-Host "---"
-    Write-Host "Date Created:  $dc"
-    Write-Host "Date Modified: $dm"
-    Write-Host "---"
-    Write-Host "Timestamps copied"
+    if (-Not $Quiet) {
+        Write-Host "File/Folder:   $FilePath"
+        Write-Host "---"
+        Write-Host "Date Created:  $dc"
+        Write-Host "Date Modified: $dm"
+        Write-Host "---"
+        Write-Host "Timestamps copied"
+    }
 }
 
 function Paste-Timestamps {
@@ -296,23 +307,31 @@ function Paste-Timestamps-Internal {
         [string]$dmNew
     )
 
-    Write-Host "File/Folder:   $FilePath"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
-    Write-Host "---"
-    Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
-    Write-Host "---"
+    if (-Not $Quiet) {
+        Write-Host "File/Folder:   $FilePath"
+        Write-Host "---"
+        Highlight-Diff -Label "Date Created: " -Old "$dcOld" -New "$dcNew"
+        Write-Host "---"
+        Highlight-Diff -Label "Date Modified:" -Old "$dmOld" -New "$dmNew"
+        Write-Host "---"
+    }
 
-    $applyChanges = if ($Quiet) { "y" } else { Read-Host "Apply changes? (y/N)" }
+    $applyChanges = if ($SkipConfirm -or $ScriptMode -ieq "Hidden") { "y" } else { Read-Host "Apply changes? (y/N)" }
+    $message = ""
+
     if ($applyChanges -ieq "y") {
         $item = Get-Item -Path "$FilePath"
         # Changing both values triggers "Refresh" in Windows File Explorer
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Set-Clipboard-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
-        Write-Host "Done"
+        $message = "Done"
     } else {
-        Write-Host "Canceled"
+        $message = "Canceled"
+    }
+
+    if (-Not $Quiet) {
+        Write-Host "$message"
     }
 }
 
@@ -418,10 +437,10 @@ function Show-Guard-Message {
         [string]$Message
     )
 
-    if ($Quiet) {
+    if ($ScriptMode -ieq "Hidden") {
         Add-Type -AssemblyName PresentationCore,PresentationFramework
         [System.Windows.MessageBox]::Show("$Message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
-    } else {
+    } elseif (-Not $Quiet) {
         Write-Host "$Message"
         Pause-Script
     }
