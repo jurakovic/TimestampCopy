@@ -161,7 +161,7 @@ function Install {
     Create-AppData
     Add-ContextMenu -RootKey "$fRootKey" -ScriptMode "$ScriptMode"
     Add-ContextMenu -RootKey "$dRootKey" -ScriptMode "$ScriptMode"
-    Write-Host "Done"
+    Write-Host "Done" -ForegroundColor Green
 }
 
 function Create-AppData {
@@ -213,7 +213,7 @@ function Uninstall {
     Remove-ContextMenu -RootKey "$fRootKey"
     Remove-ContextMenu -RootKey "$dRootKey"
     Remove-Item -Recurse -Force -Path "$appdataPath" *> $null
-    Write-Host "Done"
+    Write-Host "Done" -ForegroundColor Green
 }
 
 function Remove-ContextMenu {
@@ -245,7 +245,7 @@ function Copy-Timestamps {
         Write-Host "Date Created:  $dc"
         Write-Host "Date Modified: $dm"
         Write-Host "---"
-        Write-Host "Timestamps copied"
+        Write-Host "Timestamps copied" -ForegroundColor Green
     }
 }
 
@@ -323,7 +323,6 @@ function Paste-Timestamps-Internal {
     }
 
     $applyChanges = if ($SkipConfirm -or $ScriptMode -ieq "Background") { "y" } else { Read-Host "Apply changes? (y/N)" }
-    $message = ""
 
     if ($applyChanges -ieq "y") {
         $item = Get-Item -Path "$FilePath"
@@ -331,13 +330,14 @@ function Paste-Timestamps-Internal {
         $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
         $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
         Set-Clipboard-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
-        $message = "Done"
-    } else {
-        $message = "Canceled"
-    }
 
-    if (-Not $Quiet) {
-        Write-Host "$message"
+        if (-Not $Quiet) {
+            Write-Host "Done" -ForegroundColor Green
+        }
+    } else {
+        if (-Not $Quiet) {
+            Write-Host "Canceled"
+    }
     }
 }
 
@@ -447,7 +447,7 @@ function Show-Guard-Message {
         Add-Type -AssemblyName PresentationCore,PresentationFramework
         [System.Windows.MessageBox]::Show("$Message", "Timestamp Copy", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
     } elseif (-Not $Quiet) {
-        Write-Host "$Message"
+        Write-Host "$Message" -ForegroundColor Red
         Pause-Script
     }
     exit 1
