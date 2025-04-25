@@ -94,7 +94,7 @@ function Main {
         exit 0
     }
 
-    $ScriptMode = "Standalone" # to show "Pause-Script" message
+    $ScriptMode = "Standalone" # to show "Pause-Script" message to prevent closing the window
     Show-Menu
 }
 
@@ -106,30 +106,24 @@ function Show-Menu {
         Write-Host ""
         Write-Host "  Timestamp Copy ($versionn)    "
         Write-Host "                                "
-        Write-Host "  [i] Install                   " # Standalone mode
-        Write-Host "  [b] Install (Background Mode) " # Background mode
+        Write-Host "  [i] Install                   "
+        Write-Host "  [b] Install (Background Mode) "
         Write-Host "  [u] Uninstall                 "
         Write-Host "                                "
         Write-Host "  [q] Quit                      "
         Write-Host ""
         $option = Read-Host "Choose option"
+
         Clear-Host
-        Perform-Action -Option $option
+        switch ($option) {
+            "i" { Install -ScriptMode "Standalone" }
+            "b" { Install -ScriptMode "Background" }
+            "u" { Uninstall }
+            "q" { exit 0 }
+            default { Write-Host "Unknown option: $option" }
+        }
+
         Pause-Script "continue"
-    }
-}
-
-function Perform-Action {
-    param (
-        [string]$Option
-    )
-
-    switch ($Option) {
-        "i" { Install -ScriptMode "Standalone" }
-        "b" { Install -ScriptMode "Background" }
-        "u" { Uninstall }
-        "q" { exit 0 }
-        default { Write-Host "Unknown option: $Option" }
     }
 }
 
@@ -151,7 +145,7 @@ function Install {
 
     net session *> $null
     if (-Not $?) {
-        Write-Host "Not running as Admin"
+        Write-Host "Administrator privileges required. Run as Administrator." -ForegroundColor Red
         Pause-Script
         exit 1
     }
@@ -175,11 +169,11 @@ function Add-ContextMenu {
     )
 
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -IconPath "$iconPath"
-    Add-MenuItem -Key "$RootKey\shell\010CopyTimestamps" -Label "Copy" -Action "Copy '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\020PasteTimestamps" -Label "Paste" -Action "Paste '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\030PasteDateCreated" -Label "Paste 'Date Created'" -Action "PasteDateCreated '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\040PasteDateModified" -Label "Paste 'Date Modified'" -Action "PasteDateModified '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\050UndoTimestamps" -Label "Undo" -Action "Undo" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\010-Copy" -Label "Copy" -Action "Copy '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\020-Paste" -Label "Paste" -Action "Paste '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\030-PasteDateCreated" -Label "Paste """"Date Created""""" -Action "PasteDateCreated '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\040-PasteDateModified" -Label "Paste """"Date Modified""""" -Action "PasteDateModified '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\050-Undo" -Label "Undo" -Action "Undo" -ScriptMode "$ScriptMode"
 }
 
 function Add-MenuRoot {
@@ -334,10 +328,8 @@ function Paste-Timestamps-Internal {
         if (-Not $Quiet) {
             Write-Host "Done" -ForegroundColor Green
         }
-    } else {
-        if (-Not $Quiet) {
-            Write-Host "Canceled"
-    }
+    } elseif (-Not $Quiet) {
+        Write-Host "Canceled" -ForegroundColor Yellow
     }
 }
 
@@ -384,7 +376,7 @@ function Path-Exists {
     )
 
     if (-Not (Test-Path -Path "$FilePath")) {
-        Show-Guard-Message "Cannot find path '$FilePath' because it does not exist."
+        Show-Guard-Message "Path '$FilePath' does not exist."
     }
 }
 
