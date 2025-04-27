@@ -53,7 +53,7 @@ The script is made to be run from the context menu, but it can also be run direc
 
 ### Requirements
 
-- Windows 10/11 (tested on Windows 11 24H2)  
+- Windows 10/11
 - PowerShell 5.1 or later  
 - Administrator privileges (required for installation)
 

@@ -173,8 +173,8 @@ function Add-ContextMenu {
     Add-MenuRoot -Key "$RootKey" -Label "Timestamp Copy" -IconPath "$iconPath"
     Add-MenuItem -Key "$RootKey\shell\010-Copy" -Label "Copy" -Action "Copy '%1'" -ScriptMode "$ScriptMode"
     Add-MenuItem -Key "$RootKey\shell\020-Paste" -Label "Paste" -Action "Paste '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\030-PasteDateCreated" -Label "Paste """"Date Created""""" -Action "PasteDateCreated '%1'" -ScriptMode "$ScriptMode"
-    Add-MenuItem -Key "$RootKey\shell\040-PasteDateModified" -Label "Paste """"Date Modified""""" -Action "PasteDateModified '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\030-PasteDateCreated" -Label "Paste \""Date Created\""" -Action "PasteDateCreated '%1'" -ScriptMode "$ScriptMode"
+    Add-MenuItem -Key "$RootKey\shell\040-PasteDateModified" -Label "Paste \""Date Modified\""" -Action "PasteDateModified '%1'" -ScriptMode "$ScriptMode"
     Add-MenuItem -Key "$RootKey\shell\050-Undo" -Label "Undo" -Action "Undo" -ScriptMode "$ScriptMode"
 }
 
@@ -201,7 +201,7 @@ function Add-MenuItem {
     $headless = if ($ScriptMode -ieq "Background") { "conhost.exe --headless " } else { "" }
 
     reg.exe add "$Key" /ve /d "$Label" /f | Out-Null
-    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command """"& '$scriptPath' -ScriptMode '$ScriptMode' -$Action""""" /f | Out-Null
+    reg.exe add "$Key\command" /ve /d "${headless}powershell -ExecutionPolicy ByPass -NoProfile -Command \""& '$scriptPath' -ScriptMode '$ScriptMode' -$Action\""" /f | Out-Null
 }
 
 function Uninstall {
