@@ -34,12 +34,35 @@ If you choose `Undo` repeatedly, it will rotate the timestamps between the "old"
 
 The script is made to be run from the context menu, but it can also be run directly from the command line.
 
+Parameters:
+```powershell
+-Help (-h)                       Print help.
+-Version (-v)                    Print the current version of the script.
+-Install (-i)                    Install the context menu entries for the script in standalone mode.
+-InstallBackgroundMode (-b)      Install the context menu entries for the script in background mode (runs without a terminal window).
+-Uninstall (-u)                  Uninstall the context menu entries and remove related data.
+-Copy (-c) <path>                Copy timestamps of the specified file or folder to the clipboard.
+-Paste (-p) <path>               Paste the copied timestamps to the specified file or folder.
+-PasteDateCreated (-pc) <path>   Paste only the copied Date Created timestamp to the specified file or folder.
+-PasteDateModified (-pm) <path>  Paste only the copied Date Created timestamp to the specified file or folder.
+-Undo (-z)                       Restore the previous timestamps of the last modified file or folder.
+-Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code.
+-SkipConfirm (-y)                Skip confirmation prompts when applying changes.
+```
+
+Some examples:
 ```powershell
 # Copy timestamps
 .\TimestampCopy.ps1 -c "C:\Foo.txt"
 
 # Paste timestamps
 .\TimestampCopy.ps1 -p "D:\Bar.txt"
+
+# Paste timestamps without output messages (confirm prompt still shown)
+.\TimestampCopy.ps1 -p "D:\Bar.txt" -q
+
+# Paste timestamps without output messages and confirm prompt
+.\TimestampCopy.ps1 -p "D:\Bar.txt" -q -y
 
 # Paste Date Created
 .\TimestampCopy.ps1 -pc "D:\Bar.txt"

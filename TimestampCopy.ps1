@@ -10,9 +10,9 @@ Param(
     [string][Alias('pc')]$PasteDateCreated,
     [string][Alias('pm')]$PasteDateModified,
     [switch][Alias('z')]$Undo,
-    [ValidateSet("Terminal","Standalone","Background")][string][Alias('m')]$ScriptMode = "Terminal",
     [switch][Alias('q')]$Quiet,
-    [switch][Alias('y')]$SkipConfirm
+    [switch][Alias('y')]$SkipConfirm,
+    [Parameter(DontShow=$true)][ValidateSet("Terminal","Standalone","Background")][string][Alias('m')]$ScriptMode = "Terminal"
 )
 
 ##### Constants
@@ -33,7 +33,7 @@ $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
 function Main {
     if ($Help) {
-        Write-Host "For help visit $homepage"
+        Show-Help
         exit 0
     }
 
@@ -99,7 +99,54 @@ function Main {
     Show-Menu
 }
 
-##### Install/Uninstall Functions
+##### Help
+
+function Show-Help {
+    Write-Host "TimestampCopy v$versionn"
+    Write-Host ""
+    Write-Host "Parameters:"
+    Write-Host "  -Help (-h)                       Print help."
+    Write-Host "  -Version (-v)                    Print the current version of the script."
+    Write-Host "  -Install (-i)                    Install the context menu entries for the script in standalone mode."
+    Write-Host "  -InstallBackgroundMode (-b)      Install the context menu entries for the script in background mode (runs without a terminal window)."
+    Write-Host "  -Uninstall (-u)                  Uninstall the context menu entries and remove related data."
+    Write-Host "  -Copy (-c) <path>                Copy timestamps of the specified file or folder to the clipboard."
+    Write-Host "  -Paste (-p) <path>               Paste the copied timestamps to the specified file or folder."
+    Write-Host "  -PasteDateCreated (-pc) <path>   Paste only the copied Date Created timestamp to the specified file or folder."
+    Write-Host "  -PasteDateModified (-pm) <path>  Paste only the copied Date Created timestamp to the specified file or folder."
+    Write-Host "  -Undo (-z)                       Restore the previous timestamps of the last modified file or folder."
+    Write-Host "  -Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code."
+    Write-Host "  -SkipConfirm (-y)                Skip confirmation prompts when applying changes."
+    Write-Host ""
+    Write-Host "Some examples:"
+    Write-Host "# Install the context menu entries"
+    Write-Host ".\TimestampCopy.ps1 -i"
+    Write-Host ""
+    Write-Host "# Copy timestamps"
+    Write-Host ".\TimestampCopy.ps1 -c `"C:\Foo.txt`""
+    Write-Host ""
+    Write-Host "# Paste timestamps"
+    Write-Host ".\TimestampCopy.ps1 -p `"D:\Bar.txt`""
+    Write-Host ""
+    Write-Host "# Paste timestamps without output messages (confirm prompt still shown)"
+    Write-Host ".\TimestampCopy.ps1 -p `"D:\Bar.txt`" -q"
+    Write-Host ""
+    Write-Host "# Paste timestamps without output messages and confirm prompt"
+    Write-Host ".\TimestampCopy.ps1 -p `"D:\Bar.txt`" -q -y"
+    Write-Host ""
+    Write-Host "# Paste Date Created"
+    Write-Host ".\TimestampCopy.ps1 -pc `"D:\Bar.txt`""
+    Write-Host ""
+    Write-Host "# Paste Date Modified"
+    Write-Host ".\TimestampCopy.ps1 -pm `"D:\Bar.txt`""
+    Write-Host ""
+    Write-Host "# Undo"
+    Write-Host ".\TimestampCopy.ps1 -z"
+    Write-Host ""
+    Write-Host "For more information, visit https://github.com/jurakovic/timestamp-copy"
+}
+
+##### Install/Uninstall
 
 function Show-Menu {
     while ($true) {
@@ -221,7 +268,7 @@ function Remove-ContextMenu {
     reg.exe delete "$RootKey" /f *> $null
 }
 
-##### Context Menu Commands (Copy/Paste Functions)
+##### Context Menu Commands (Copy/Paste Actions)
 
 function Copy-Timestamps {
     param (
