@@ -117,6 +117,7 @@ function Show-Help {
     Write-Host "  -Undo (-z)                       Restore the previous timestamps of the last modified file or folder."
     Write-Host "  -Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code."
     Write-Host "  -SkipConfirm (-y)                Skip confirmation prompts when applying changes."
+    Write-Host "  *none*                           Show the install/uninstall menu."
     Write-Host ""
     Write-Host "Some examples:"
     Write-Host "# Install the context menu entries"
@@ -157,6 +158,7 @@ function Show-Menu {
         Write-Host "  [i] Install                   "
         Write-Host "  [b] Install (Background Mode) "
         Write-Host "  [u] Uninstall                 "
+        Write-Host "  [h] Help                      "
         Write-Host "                                "
         Write-Host "  [q] Quit                      "
         Write-Host ""
@@ -167,6 +169,7 @@ function Show-Menu {
             "i" { Install -ScriptMode "Standalone" }
             "b" { Install -ScriptMode "Background" }
             "u" { Uninstall }
+            "h" { Show-Help }
             "q" { exit 0 }
             default { Write-Host "Unknown option: $option" }
         }

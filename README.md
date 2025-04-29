@@ -48,6 +48,7 @@ Parameters:
 -Undo (-z)                       Restore the previous timestamps of the last modified file or folder.
 -Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code.
 -SkipConfirm (-y)                Skip confirmation prompts when applying changes.
+*none*                           Show the install/uninstall menu.
 ```
 
 Some examples:
@@ -74,7 +75,7 @@ Some examples:
 .\TimestampCopy.ps1 -z
 ```
 
-It can also be run without any argument, which will display the install/uninstall menu:
+It can also be run without any argument, which will show the install/uninstall menu:
 
 ```text
 Timestamp Copy (2.1.0-preview.1)
@@ -82,6 +83,7 @@ Timestamp Copy (2.1.0-preview.1)
 [i] Install
 [b] Install (Background Mode)
 [u] Uninstall
+[h] Help
 
 [q] Quit
 
