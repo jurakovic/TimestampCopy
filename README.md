@@ -74,6 +74,20 @@ Some examples:
 .\TimestampCopy.ps1 -z
 ```
 
+It can also be run without any argument, which will display the install/uninstall menu:
+
+```text
+Timestamp Copy (2.1.0-preview.1)
+
+[i] Install
+[b] Install (Background Mode)
+[u] Uninstall
+
+[q] Quit
+
+Choose option:
+```
+
 ### Requirements
 
 - Windows 10/11
@@ -91,28 +105,14 @@ Some examples:
 	```powershell
 	cd timestamp-copy
 	```
-4. Add the context menu entries. This can be done in two ways.  
-	Run the `TimestampCopy.ps1` script
-	```powershell
-	.\TimestampCopy.ps1
-	```
-
-	and then choose the option `i`
-	```text
-	Timestamp Copy (2.1.0-preview.1)
-
-	[i] Install
-	[b] Install (Background Mode)
-	[u] Uninstall
-
-	[q] Quit
-
-	Choose option:
-	```
-
-	or run the script with the `-i` option to install it directly:
+4. Add the context menu entries.  
+	Run the script with the `-i` option
 	```powershell
 	.\TimestampCopy.ps1 -i
+	```
+	or with the `-b` option to install it in background mode (without a terminal window)
+	```powershell
+	.\TimestampCopy.ps1 -b
 	```
 
 ### Usage (Detailed)
