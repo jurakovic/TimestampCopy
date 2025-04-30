@@ -148,9 +148,9 @@ This script is provided **as-is**, without any warranties or guarantees of fitne
 
 | Release | Source | Description |
 | --- | --- | --- |
-| [1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0) | [1.0.0](https://github.com/jurakovic/timestamp-copy/tree/v.1.0.0) | Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use. |
-| [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1) | [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/tree/v.2.0.0-preview.1) | Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment. |
-| [2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0) | [2.0.0](https://github.com/jurakovic/timestamp-copy/tree/v.2.0.0) | Complete rewrite of the original Bash script in native PowerShell syntax. |
+| [1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v1.0.0) | [1.0.0](https://github.com/jurakovic/timestamp-copy/tree/v1.0.0) | Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use. |
+| [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1) | [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/tree/v2.0.0-preview.1) | Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment. |
+| [2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0) | [2.0.0](https://github.com/jurakovic/timestamp-copy/tree/v2.0.0) | Complete rewrite of the original Bash script in native PowerShell syntax. |
 
 ---
 
