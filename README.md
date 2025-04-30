@@ -14,7 +14,9 @@ This solution is especially useful when you need to preserve or replicate Date C
 
 ### Usage (Context Menu)
 
-Right-click on a file or folder and choose `Copy` under the context menu. This stores the selected file or folder's Date Created and Date Modified timestamps to a temporary location for reuse.
+Right-click on a file or folder under the context menu and choose:
+
+- `Copy` – to copy the selected file or folder's Date Created and Date Modified timestamps to a clipboard.
 
 Right-click on another file or folder and choose:
 
@@ -22,13 +24,11 @@ Right-click on another file or folder and choose:
 - `Paste "Date Created"` – to apply only the Date Created  
 - `Paste "Date Modified"` – to apply only the Date Modified  
 
-Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the selected file or folder's path and the current ("old") timestamps to a temporary location.  
-If you copy timestamps from a wrong file or folder and paste it to some file or folder, or you paste it to a wrong file or folder, you can undo the operation by right-clicking on the file or folder and choose `Undo` under the context menu.  
+Right-click on the same (or any other) file or folder and choose:
 
-The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation. `Undo` then does the same as the `Paste` operation. It stores the *undo-ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.  
-If you choose `Undo` repeatedly, it will rotate the timestamps between the "old" and "new" values.  
+- `Undo` – to restore the previously overwritten timestamp(s).  
 
-## Usage (CLI)
+### Usage (CLI)
 
 The script is made to be run from the context menu, but it can also be run directly from the command line.
 
@@ -118,6 +118,13 @@ Choose option:
 ### Implementation Details
 
 todo: all operations, variants, modes, validations, examples, etc.
+
+<!-- backup
+The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation.
+Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the selected file or folder's path and the current ("old") timestamps to a temporary location.
+The `Undo` itself then does the same as the `Paste` operation – it stores the undo-*ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.
+That means if you choose `Undo` repeatedly, it will for the same file or folder rotate the timestamps between the "old" and "new" values.
+-->
 
 ### Screenshots
 
