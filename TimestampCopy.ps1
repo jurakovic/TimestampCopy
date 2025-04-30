@@ -12,7 +12,7 @@ Param(
     [switch][Alias('z')]$Undo,
     [switch][Alias('q')]$Quiet,
     [switch][Alias('y')]$SkipConfirm,
-    [Parameter(DontShow=$true)][ValidateSet("Terminal","Standalone","Background")][string][Alias('m')]$ScriptMode = "Terminal"
+    [ValidateSet("Terminal","Standalone","Background")][string][Alias('m')]$ScriptMode = "Terminal"
 )
 
 ##### Constants
@@ -26,7 +26,7 @@ $clipPath = "$appdataPath\clip"
 $undoPath = "$appdataPath\clip-undo"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
-$lRootKey = "HKEY_CLASSES_ROOT\lnkfile\shell\TimestampCopy" # otherwise it will change target timestamps
+$lRootKey = "HKEY_CLASSES_ROOT\lnkfile\shell\TimestampCopy" # otherwise it will change shortcut target timestamps
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
 ##### Main
@@ -113,7 +113,7 @@ function Show-Help {
     Write-Host "  -Copy (-c) <path>                Copy timestamps of the specified file or folder to the clipboard."
     Write-Host "  -Paste (-p) <path>               Paste the copied timestamps to the specified file or folder."
     Write-Host "  -PasteDateCreated (-pc) <path>   Paste only the copied Date Created timestamp to the specified file or folder."
-    Write-Host "  -PasteDateModified (-pm) <path>  Paste only the copied Date Created timestamp to the specified file or folder."
+    Write-Host "  -PasteDateModified (-pm) <path>  Paste only the copied Date Modified timestamp to the specified file or folder."
     Write-Host "  -Undo (-z)                       Restore the previous timestamps of the last modified file or folder."
     Write-Host "  -Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code."
     Write-Host "  -SkipConfirm (-y)                Skip confirmation prompts when applying changes."

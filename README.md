@@ -12,39 +12,37 @@ This solution is especially useful when you need to preserve or replicate Date C
 
 [![GitHub Release](https://img.shields.io/github/v/release/jurakovic/timestamp-copy?include_prereleases)](https://github.com/jurakovic/timestamp-copy/releases/latest)
 
-### Usage <sub><sup>(Short)</sup></sub>
-
-#### Context Menu
+### Usage (Context Menu)
 
 Right-click on a file or folder and choose `Copy` under the context menu. This stores the selected file or folder's Date Created and Date Modified timestamps to a temporary location for reuse.
 
 Right-click on another file or folder and choose:
 
-`Paste` – to apply previously copied timestamps  
-`Paste "Date Created"` – to apply only the Date Created  
-`Paste "Date Modified"` – to apply only the Date Modified  
+- `Paste` – to apply previously copied timestamps  
+- `Paste "Date Created"` – to apply only the Date Created  
+- `Paste "Date Modified"` – to apply only the Date Modified  
 
-Each `Paste` operation, before overwriting timestamps with "new" ones, stores the selected file or folder's path and current ("old") timestamps to a temporary location.  
-If you copy timestamps from a wrong file or folder and paste it to some file or folder, or you paste it to wrong file or folder, you can undo the operation by right-clicking on the file or folder and choosing `Undo` under the context menu.  
+Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the selected file or folder's path and the current ("old") timestamps to a temporary location.  
+If you copy timestamps from a wrong file or folder and paste it to some file or folder, or you paste it to a wrong file or folder, you can undo the operation by right-clicking on the file or folder and choose `Undo` under the context menu.  
 
-The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation. `Undo` then does the same as `Paste` operation. It stores the *undo-ed* file or folder's path and current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.  
+The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation. `Undo` then does the same as the `Paste` operation. It stores the *undo-ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.  
 If you choose `Undo` repeatedly, it will rotate the timestamps between the "old" and "new" values.  
 
-#### CLI
+## Usage (CLI)
 
 The script is made to be run from the context menu, but it can also be run directly from the command line.
 
 Parameters:
-```powershell
+```text
 -Help (-h)                       Print help.
 -Version (-v)                    Print the current version of the script.
--Install (-i)                    Install the context menu entries for the script in standalone mode.
--InstallBackgroundMode (-b)      Install the context menu entries for the script in background mode (runs without a terminal window).
+-Install (-i)                    Install the context menu entries for the script in Standalone Mode.
+-InstallBackgroundMode (-b)      Install the context menu entries for the script in Background Mode (runs without a terminal window).
 -Uninstall (-u)                  Uninstall the context menu entries and remove related data.
 -Copy (-c) <path>                Copy timestamps of the specified file or folder to the clipboard.
 -Paste (-p) <path>               Paste the copied timestamps to the specified file or folder.
 -PasteDateCreated (-pc) <path>   Paste only the copied Date Created timestamp to the specified file or folder.
--PasteDateModified (-pm) <path>  Paste only the copied Date Created timestamp to the specified file or folder.
+-PasteDateModified (-pm) <path>  Paste only the copied Date Modified timestamp to the specified file or folder.
 -Undo (-z)                       Restore the previous timestamps of the last modified file or folder.
 -Quiet (-q)                      Suppress output messages. After run check $LastExitCode or $? for exit code.
 -SkipConfirm (-y)                Skip confirmation prompts when applying changes.
@@ -107,19 +105,21 @@ Choose option:
 	```powershell
 	cd timestamp-copy
 	```
-4. Add the context menu entries.  
+4. Install the context menu entries.  
 	Run the script with the `-i` option
 	```powershell
 	.\TimestampCopy.ps1 -i
 	```
-	or with the `-b` option to install it in background mode (without a terminal window)
+	or with the `-b` option to install it in Background Mode (without a terminal window)
 	```powershell
 	.\TimestampCopy.ps1 -b
 	```
 
-### Usage (Detailed)
+### Implementation Details
 
 todo: all operations, variants, modes, validations, examples, etc.
+
+### Screenshots
 
 Copy  
 ![Copy](img/copy.png)
@@ -137,15 +137,17 @@ This script is provided **as-is**, without any warranties or guarantees of fitne
 
 ---
 
-> #### Previous Releases
->
-> - <small>[v1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0): Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use.</small>  
-> - <small>[v2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1): Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment.</small>  
-> - <small>[v2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0): Complete rewrite of the original Bash script in native PowerShell syntax.</small>  
+#### Old Versions
+
+| Release | Source | Description |
+| --- | --- | --- |
+| [1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v.1.0.0) | [1.0.0](https://github.com/jurakovic/timestamp-copy/tree/v.1.0.0) | Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v.1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use. |
+| [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1) | [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/tree/v.2.0.0-preview.1) | Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment. |
+| [2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0) | [2.0.0](https://github.com/jurakovic/timestamp-copy/tree/v.2.0.0) | Complete rewrite of the original Bash script in native PowerShell syntax. |
 
 ---
 
-### References
+#### References
 
 <https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders>  
 <https://www.tomshardware.com/software/windows/how-to-add-custom-shortcuts-to-the-windows-11-or-10-context-menu>  
