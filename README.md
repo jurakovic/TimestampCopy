@@ -119,7 +119,29 @@ Choose option:
 
 todo: all operations, variants, modes, validations, examples, etc.
 
-The script can operate in three different modes, and each mode defines behavior of the script:
+The script supports next operations:
+
+- **`Copy`**:
+	- Copies the Date Created and Date Modified timestamps of a specified file or folder to the clipboard.
+	- It will show the specified file or folder's path and the copied timestamps.
+- **`Paste`**:
+	- Applies the copied timestamps to a specified file or folder.
+	- It will show the specified file or folder's path and the current ("old") and copied ("new") timestamps.
+	- It will ask for confirmation before applying the changes.
+- **`Paste "Date Created"`**:
+	- Applies only the copied Date Created timestamp to a specified file or folder.
+	- The rest of the logic is the same as for the `Paste` operation.
+- **`Paste "Date Modified"`**:
+	- Applies only the copied Date Modified timestamp to a specified file or folder.
+	- The rest of the logic is the same as for the `Paste` operation.
+- **`Undo`**:
+	- Restores the previous timestamps of the last modified file or folder.
+	- It is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation.
+	- Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the specified file or folder's path and the current ("old") timestamps to a temporary location.
+	- The `Undo` itself then does the same as the `Paste` operation – it stores the undo-*ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.
+	- That means if you choose `Undo` repeatedly, it will for the same file or folder rotate the timestamps between the "old" and "new" values.
+
+The script can operate in three different modes, and each mode defines slightly different behavior of the script:
 
 - **Terminal**:
 	- If the script is run from a terminal, it will use the existing terminal window to display output messages.
@@ -138,14 +160,6 @@ The script can operate in three different modes, and each mode defines behavior 
 	- The script will run in the background, without a terminal window.
 	- Normally there are no output messages or confirmation prompts, script will automatically proceed with the operation as if the user has confirmed prompt.
 	- If there are any errors, MessageBox will be shown with the error message.
-
-
-<!-- backup
-The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation.
-Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the selected file or folder's path and the current ("old") timestamps to a temporary location.
-The `Undo` itself then does the same as the `Paste` operation – it stores the undo-*ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.
-That means if you choose `Undo` repeatedly, it will for the same file or folder rotate the timestamps between the "old" and "new" values.
--->
 
 ### Screenshots
 
