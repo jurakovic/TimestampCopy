@@ -372,10 +372,17 @@ function Paste-Timestamps-Internal {
     $applyChanges = if ($SkipConfirm -or $ScriptMode -ieq "Background") { "y" } else { Read-Host "Apply changes? (y/N)" }
 
     if ($applyChanges -ieq "y") {
-        $item = Get-Item -Path "$FilePath"
-        # Changing both values triggers "Refresh" in Windows File Explorer
-        $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
-        $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        try {
+            $item = Get-Item -Path "$FilePath"
+            # Changing both values triggers "Refresh" in Windows File Explorer
+            $item.CreationTime = [datetime]::ParseExact("$dcNew", "$datetimeFormat", $null)
+            $item.LastWriteTime = [datetime]::ParseExact("$dmNew", "$datetimeFormat", $null)
+        }
+        catch {
+            Write-Host "Error" -ForegroundColor Red
+            Show-Guard-Message "$Error"
+        }
+
         Set-Clipboard-Content -Path "$undoPath" -Value "$FilePath`n$dcOld`n$dmOld" # Backup old timestamps
 
         if (-Not $Quiet) {
