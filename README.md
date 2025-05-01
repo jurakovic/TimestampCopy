@@ -119,6 +119,27 @@ Choose option:
 
 todo: all operations, variants, modes, validations, examples, etc.
 
+The script can operate in three different modes, and each mode defines behavior of the script:
+
+- **Terminal**:
+	- If the script is run from a terminal, it will use the existing terminal window to display output messages.
+	- It won't use *Pause* at the end of the operation, because the terminal will stay open anyway and you will see all messages.
+	- If `-q` option is used, it will suppress all output messages, but it will still show the confirmation prompt.
+	- If `-y` option is used, it will show output messages, but it will suppress the confirmation prompt and script will automatically proceed with the operation as if the user has confirmed prompt.
+	- If both `-q` and `-y` options are used, it will suppress both output messages and the confirmation prompt and script will automatically proceed with the operation as if the user has confirmed prompt.
+- **Standalone**:
+	- This is the default mode for context menu integration.
+	- Each operation will open a new terminal window.
+	- It will use *Pause* at the end of the operation, so you can read the output messages.
+	- After pressing any key the window will close.
+	- By default no `-q` or `-y` options are used, so the script will show output messages and confirmation prompt.
+- **Background**:
+	- This is the second option for context menu integration.
+	- The script will run in the background, without a terminal window.
+	- Normally there are no output messages or confirmation prompts, script will automatically proceed with the operation as if the user has confirmed prompt.
+	- If there are any errors, MessageBox will be shown with the error message.
+
+
 <!-- backup
 The `Undo` operation is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation.
 Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the selected file or folder's path and the current ("old") timestamps to a temporary location.

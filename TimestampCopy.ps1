@@ -26,7 +26,7 @@ $clipPath = "$appdataPath\clip"
 $undoPath = "$appdataPath\clip-undo"
 $fRootKey = "HKEY_CLASSES_ROOT\*\shell\TimestampCopy"
 $dRootKey = "HKEY_CLASSES_ROOT\Directory\shell\TimestampCopy"
-$lRootKey = "HKEY_CLASSES_ROOT\lnkfile\shell\TimestampCopy" # otherwise it will change shortcut target timestamps
+$lRootKey = "HKEY_CLASSES_ROOT\lnkfile\shell\TimestampCopy"
 $datetimeFormat = "yyyy-MM-dd HH:mm:ss"
 
 ##### Main
