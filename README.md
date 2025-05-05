@@ -20,13 +20,13 @@ Right-click on a file or folder under the context menu and choose:
 
 Right-click on another file or folder and choose:
 
-- `Paste` – to apply previously copied timestamps  
-- `Paste "Date Created"` – to apply only the Date Created  
-- `Paste "Date Modified"` – to apply only the Date Modified  
+- `Paste` – to apply previously copied timestamps.
+- `Paste "Date Created"` – to apply only the Date Created.
+- `Paste "Date Modified"` – to apply only the Date Modified.
 
 Right-click on the same (or any other) file or folder and choose:
 
-- `Undo` – to restore the previously overwritten timestamp(s).  
+- `Undo` – to restore the previously overwritten timestamp(s).
 
 ### Usage (CLI)
 
@@ -110,7 +110,7 @@ Choose option:
 > ```powershell
 > Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 > ```
-> More details about execution policy and scope can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.5) and [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5#parameters).
+> More details about the PowerShell execution policies can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.5) and [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5#parameters).
 
 4. Install the context menu entries.  
 	Run the script with the `-i` option
@@ -153,15 +153,14 @@ The script implements five main operations:
 **`Undo`**
 - Restores the previous timestamps of the last modified file or folder.
 - It is avaliable on all files and folders, but it will only restore the timestamps for the file or folder that was last used in the `Paste` (or `Undo`) operation.
-- Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the specified file or folder's path and the current ("old") timestamps to a temporary location.
-- The `Undo` itself then does the same as the `Paste` operation – it stores the undo-*ed* file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.
+- Each `Paste` operation, before overwriting timestamps with the previously copied ("new") ones, stores the specified file or folder's path and the current ("old") timestamps to an "undo-clipboard". (More details below.)
+- The `Undo` itself then does the same as the `Paste` operation – it stores the restored file or folder's path and the current timestamps to a temporary location. If you again choose `Undo`, it will restore the timestamps back to the "new" values.
 - That means if you choose `Undo` repeatedly, it will for the same file or folder rotate the timestamps between the "old" and "new" values.
 
 #### Script Modes
 
 The script can operate in three different modes, and each mode defines slightly different behavior of the script.  
-The mode is determined by the way the script is executed and it's not meant to be set by the user.  
-The default is *Terminal* and the script will set the desired mode for the context menu integration based on installation user input.  
+The mode is determined by the way the script is executed, and although there is a parameter for that it's not meant to be set by the user. The default is *Terminal* and the script will set the desired mode for the context menu integration based on installation user input.  
 
 ***`Terminal`***
 - If the script is run from the terminal, it will use the existing terminal window to display output messages.
@@ -172,15 +171,15 @@ The default is *Terminal* and the script will set the desired mode for the conte
 
 ***`Standalone`***
 - This is the default mode for context menu integration.
-- Each operation will open a new terminal window.
-- It will use *Pause* at the end of the operation to prevent automatically closing the window, so you can read the output messages.
+- Each operation will run in a new terminal window.
+- It will use *Pause* at the end of the operation to prevent automatically closing the window, so you can see the output messages.
 - The window will close after pressing any key.
 - No `-q` or `-y` options are used, so the script will show output messages and confirmation prompt.
 
 ***`Background`***
 - This is an alternative option for context menu integration.
 - The script will run in the background, without a terminal window.
-- Normally there are no output messages or confirmation prompts, script will automatically proceed with the operation as if the user has confirmed prompt.
+- There are no output messages or confirmation prompts, script will automatically proceed with the operation as if the user has confirmed prompt.
 - If there were any errors, error message will be shown in a *MessageBox*.
 
 #### Clipboard
@@ -189,8 +188,7 @@ As a "clipboard" the script uses two files in the `%LOCALAPPDATA%\TimestampCopy`
 - `clip` – stores the copied timestamps
 - `clip-undo` – stores the data for the `Undo` operation
 
-The script automatically creates the folder and files if they don't exist.  
-File contents are Base64 encoded to avoid manipulation and to ensure that the data is stored in a consistent format.  
+File contents are Base64 encoded to avoid manipulation to ensure that the data is stored in a consistent format.  
 If the contents are not in the expected format, the script will output an error message and exit.  
 
 ### Screenshots
