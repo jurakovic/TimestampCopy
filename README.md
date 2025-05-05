@@ -105,6 +105,13 @@ Choose option:
 	```powershell
 	cd timestamp-copy
 	```
+
+> If already not set, you may need to change the execution policy to allow running scripts.
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser Unrestricted
+> ```
+> More details about execution policy and scope can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.5) and [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5#-executionpolicy).
+
 4. Install the context menu entries.  
 	Run the script with the `-i` option
 	```powershell
@@ -114,6 +121,11 @@ Choose option:
 	```powershell
 	.\TimestampCopy.ps1 -b
 	```
+
+> If you set different execution policy, you may need to revert it back to the default.
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser Restricted
+> ```
 
 ### Implementation Details
 
