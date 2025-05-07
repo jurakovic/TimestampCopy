@@ -76,7 +76,7 @@ Some examples:
 It can also be run without any argument, which will show the install/uninstall menu:
 
 ```text
-Timestamp Copy (2.1.0-preview.1)
+Timestamp Copy (2.1.0)
 
 [i] Install
 [b] Install (Background Mode)

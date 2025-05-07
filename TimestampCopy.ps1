@@ -18,7 +18,7 @@ Param(
 ##### Constants
 
 $homepage = "https://github.com/jurakovic/timestamp-copy"
-$versionn = "2.1.0-preview.1"
+$versionn = "2.1.0"
 $scriptPath = "$PSCommandPath"
 $iconPath = "$PSScriptRoot\tscp.ico"
 $appdataPath = "$env:LOCALAPPDATA\TimestampCopy"
