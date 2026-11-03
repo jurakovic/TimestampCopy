@@ -5,9 +5,9 @@ public static class Constants
 	public const string Homepage = "https://github.com/jurakovic/TimestampCopy";
 	public const string Version = "3.0.0";
 
-	// Compatibility contract with TimestampCopy.ps1 ($datetimeFormat, $appdataPath,
-	// $clipPath, $undoPath). Both implementations read and write the same files during
-	// the migration, so these must not drift. See PLAN.md "Compatibility contract".
+	// Compatibility contract with the 2.x PowerShell releases ($datetimeFormat, $appdataPath,
+	// $clipPath, $undoPath in TimestampCopy.ps1). Upgrading from 2.x keeps whatever was already
+	// copied only while these match, so they must not drift.
 	public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
 	public static string AppDataPath { get; } = Path.Combine(

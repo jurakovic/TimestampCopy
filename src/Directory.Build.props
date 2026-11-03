@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Keeps the code AOT-clean from day one, so phase 2 (PublishAot) is a
-         build-property flip rather than a rewrite. See PLAN.md. -->
+    <!-- Keeps the code AOT-clean, so moving to Native AOT (PublishAot) is a
+         build-property flip rather than a rewrite -->
     <IsAotCompatible>true</IsAotCompatible>
     <InvariantGlobalization>true</InvariantGlobalization>
     <UseWPF>false</UseWPF>

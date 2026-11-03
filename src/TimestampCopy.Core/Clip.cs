@@ -38,7 +38,7 @@ public static class Clip
 	// The ...To / ...From methods below take the clipboard location instead of assuming it, so the
 	// tests can exercise the payload layout and the guards against a temp directory.
 	// Environment.GetFolderPath reads the Win32 known-folder API on Windows and ignores
-	// %LOCALAPPDATA%, so redirecting the environment is not an option. See PLAN.md step 6.
+	// %LOCALAPPDATA%, so redirecting the environment is not an option.
 	//
 	// They are deliberately NOT overloads of the public methods. WriteUndo(path, dc, dm) and
 	// WriteUndoTo(undoPath, path, dc, dm) would differ only in arity, so a test meaning the second
