@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Keeps the code AOT-clean, so moving to Native AOT (PublishAot) is a
-         build-property flip rather than a rewrite -->
+    <!-- Runs the Native AOT analyzers on every build, and with TreatWarningsAsErrors anything
+         AOT cannot compile fails it. The two executables set PublishAot themselves. -->
     <IsAotCompatible>true</IsAotCompatible>
     <InvariantGlobalization>true</InvariantGlobalization>
     <UseWPF>false</UseWPF>

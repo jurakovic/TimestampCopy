@@ -9,6 +9,8 @@
     <AssemblyName>tscpw</AssemblyName>
     <RootNamespace>TimestampCopy.Cli</RootNamespace>
     <ApplicationIcon>..\..\tscp.ico</ApplicationIcon>
+    <!-- Compiles to one native executable with no .NET runtime next to it -->
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>

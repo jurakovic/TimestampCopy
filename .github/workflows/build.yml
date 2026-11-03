@@ -2,9 +2,9 @@ name: Build
 
 # Runs the tests and publishes both executables for every push and pull
 # request, the same way step 1 of the Publish workflow does (see publish.yml).
-# Publishing trims the framework, and TreatWarningsAsErrors turns the
-# trimmer's warnings into errors, so this also checks that trimming keeps what
-# the app needs.
+# Publishing compiles both with Native AOT, and TreatWarningsAsErrors turns
+# its warnings into errors, so this also checks that AOT keeps what the app
+# needs.
 #
 # The published executables are then measured (size, startup time) and
 # smoke-tested: every action against real files, and install/uninstall against

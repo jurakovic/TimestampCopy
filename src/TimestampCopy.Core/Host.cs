@@ -1,13 +1,9 @@
 namespace TimestampCopy.Core;
 
 /// <summary>
-/// The whole command line dispatch, shared by both executables.
-/// <para>
-/// It lives here rather than in each <c>Main</c> for a build reason as much as a tidiness one:
-/// tscp and tscpw publish into one folder and share a single copy of the trimmed runtime, so
-/// whichever is published second overwrites the other's framework assemblies. Driving both from
-/// this one method gives them the same static closure, and therefore the same trimmer output.
-/// </para>
+/// The whole command line dispatch, shared by both executables. Each <c>Main</c> is one line over
+/// it, so tscp and tscpw differ only in whether they get a console (see tscpw.csproj) and in the
+/// <c>background</c> flag they pass.
 /// </summary>
 public static class Host
 {

@@ -6,9 +6,9 @@ name: Publish
 # - The version is computed from the latest v3.x.y tag: master gives the
 #   next release (3.0.1), other branches the next preview (3.0.1-preview.1).
 #   Bump Type picks the part that is increased; Version overrides it all.
-# - The executables are published on Windows, since ReadyToRun and the
-#   tests need it, and the zip is checked to hold the version it is named
-#   after by running the published tscp.exe -v.
+# - The executables are published on Windows, since Native AOT compiles
+#   for the OS it runs on and the tests need it, and the zip is checked to
+#   hold the version it is named after by running the published tscp.exe -v.
 # - The release is tagged v<version> on the built commit and published on
 #   GitHub with the zip and its SHA-256 checksum. Previews are marked as
 #   pre-releases.

@@ -18,12 +18,9 @@ BASE_VER="3"
 
 TEST_PROJECT="tests/TimestampCopy.Tests/TimestampCopy.Tests.csproj"
 
-# Both executables publish into one folder so they share a single copy of the trimmed runtime.
-# The folder is the unit of deployment - tscp.exe on its own is only the apphost and fails with
-# "The application to execute does not exist: tscp.dll".
-#
-# They also have to keep identical trim closures, since whichever publishes second overwrites
-# the other's framework assemblies. That is why both entry points are one line over Core.Host.
+# Both are Native AOT (PublishAot in their projects): each publishes to a single native
+# executable with no .NET runtime, so the release is these two files. Native AOT compiles for
+# the OS it runs on, so publish has to run on Windows, with the Visual Studio C++ build tools.
 PROJECTS=("src/tscp/tscp.csproj" "src/tscpw/tscpw.csproj")
 
 # Allowed values
@@ -67,9 +64,6 @@ function publish() {
   local project
   for project in "${PROJECTS[@]}"; do
     dotnet publish "$project" -c Release -r "$ARCH" \
-      --self-contained true \
-      -p:PublishReadyToRun=true \
-      -p:PublishTrimmed=true \
       -p:Version="$VERSION" \
       -o "$publish_path"
 
@@ -97,7 +91,7 @@ function package() {
   fi
 
   # The executables must be the ones published for this version. Running one also checks that
-  # the trimmed runtime still starts.
+  # the native executable starts.
   local published_version
   published_version=$("$publish_path/tscp.exe" -v | tr -d '\r')
   if [ "$published_version" != "$VERSION" ]; then

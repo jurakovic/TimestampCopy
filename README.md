@@ -33,12 +33,12 @@ Right-click on the same (or any other) file or folder and choose:
 - Windows 10/11 (x64)
 - Administrator privileges (required for installation only)
 
-There is nothing else to install. The executables are self-contained – no .NET runtime, and no PowerShell execution policy to change.
+There is nothing else to install. The executables are native – no .NET runtime, and no PowerShell execution policy to change.
 
 ### Installation
 
 1. Download `TimestampCopy-<version>-win-x64.zip` from the [latest release](https://github.com/jurakovic/TimestampCopy/releases/latest).
-2. Unzip it somewhere permanent. The installer registers the path you unzipped it to, so pick a location you will not move afterwards. Keep the folder's contents together – `tscp.exe` on its own will not run.
+2. Unzip it somewhere permanent. The installer registers the path you unzipped it to, so pick a location you will not move afterwards. Keep `tscp.exe` and `tscpw.exe` together – Background Mode runs `tscpw.exe` from the same folder.
 3. Open an elevated terminal ('Run as Administrator') in that folder and install the context menu entries.
 
 	```text
@@ -157,7 +157,7 @@ Five main operations are implemented:
 
 #### Executables
 
-The release folder contains two executables. They share a single copy of the runtime, which is why the folder has to stay together.
+The release contains two executables, each a single native file.
 
 - **`tscp.exe`** – a console application. It handles installation and every operation run from a terminal or in Standalone Mode.
 - **`tscpw.exe`** – the same operations with no console at all, used by Background Mode.
@@ -199,13 +199,13 @@ If the contents are not in the expected format, an error message is shown and th
 
 ### Building from Source
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and Git Bash.
+Requires Windows, the [.NET 10 SDK](https://dotnet.microsoft.com/download), the Visual Studio *Desktop development with C++* workload (Native AOT links with its tools) and Git Bash.
 
 ```bash
 ./publish.sh publish
 ```
 
-This runs the tests, then publishes both executables into `publish/win-x64` as self-contained, trimmed, ReadyToRun binaries. `./publish.sh package` then zips them into `release/`, which needs `zip` on the `PATH`. Run `./publish.sh -h` for all options.
+This runs the tests, then publishes both executables into `publish/win-x64` with Native AOT. `./publish.sh package` then zips them into `release/`, which needs `zip` on the `PATH`. Run `./publish.sh -h` for all options.
 
 Releases are made with the [Publish](.github/workflows/publish.yml) workflow, run from the *Actions* tab. It computes the version from the latest `v3.x.y` tag (the next release from `master`, the next preview from any other branch), runs the same three steps, tags the commit it built and publishes the zip and its checksum as a GitHub release.
 
