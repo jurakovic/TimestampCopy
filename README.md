@@ -10,7 +10,7 @@ This solution is especially useful when you need to preserve or replicate Date C
 
 ### Download
 
-[![GitHub Release](https://img.shields.io/github/v/release/jurakovic/timestamp-copy?include_prereleases)](https://github.com/jurakovic/timestamp-copy/releases/latest)
+[![GitHub Release](https://img.shields.io/github/v/release/jurakovic/TimestampCopy?include_prereleases)](https://github.com/jurakovic/TimestampCopy/releases/latest)
 
 ### Usage (Context Menu)
 
@@ -37,7 +37,7 @@ There is nothing else to install. The executables are self-contained – no .NET
 
 ### Installation
 
-1. Download `TimestampCopy-<version>-win-x64.zip` from the [latest release](https://github.com/jurakovic/timestamp-copy/releases/latest).
+1. Download `TimestampCopy-<version>-win-x64.zip` from the [latest release](https://github.com/jurakovic/TimestampCopy/releases/latest).
 2. Unzip it somewhere permanent. The installer registers the path you unzipped it to, so pick a location you will not move afterwards. Keep the folder's contents together – `tscp.exe` on its own will not run.
 3. Open an elevated terminal ('Run as Administrator') in that folder and install the context menu entries.
 
@@ -229,10 +229,10 @@ This tool is provided **as-is**, without any warranties or guarantees of fitness
 
 | Release | Source | Description |
 | --- | --- | --- |
-| [1.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v1.0.0) | [1.0.0](https://github.com/jurakovic/timestamp-copy/tree/v1.0.0) | Initial [`tscp.sh`](https://github.com/jurakovic/timestamp-copy/blob/v1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use. |
-| [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0-preview.1) | [2.0.0-preview.1](https://github.com/jurakovic/timestamp-copy/tree/v2.0.0-preview.1) | Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment. |
-| [2.0.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.0.0) | [2.0.0](https://github.com/jurakovic/timestamp-copy/tree/v2.0.0) | Complete rewrite of the original Bash script in native PowerShell syntax. |
-| [2.1.0](https://github.com/jurakovic/timestamp-copy/releases/tag/v2.1.0) | [2.1.0](https://github.com/jurakovic/timestamp-copy/tree/v2.1.0) | Final PowerShell release. [`TimestampCopy.ps1`](https://github.com/jurakovic/timestamp-copy/blob/v2.1.0/TimestampCopy.ps1) added CLI parameters for all actions and the three script modes. Superseded by 3.0.0, which does the same work as a native executable and starts in about 60 ms instead of about 1300 ms. |
+| [1.0.0](https://github.com/jurakovic/TimestampCopy/releases/tag/v1.0.0) | [1.0.0](https://github.com/jurakovic/TimestampCopy/tree/v1.0.0) | Initial [`tscp.sh`](https://github.com/jurakovic/TimestampCopy/blob/v1.0.0/tscp.sh) written in Bash. It was created solely for educational and experimental use. |
+| [2.0.0-preview.1](https://github.com/jurakovic/TimestampCopy/releases/tag/v2.0.0-preview.1) | [2.0.0-preview.1](https://github.com/jurakovic/TimestampCopy/tree/v2.0.0-preview.1) | Direct port of the original Bash script into PowerShell, with only the minimal necessary changes made to ensure proper execution in a PowerShell environment. |
+| [2.0.0](https://github.com/jurakovic/TimestampCopy/releases/tag/v2.0.0) | [2.0.0](https://github.com/jurakovic/TimestampCopy/tree/v2.0.0) | Complete rewrite of the original Bash script in native PowerShell syntax. |
+| [2.1.0](https://github.com/jurakovic/TimestampCopy/releases/tag/v2.1.0) | [2.1.0](https://github.com/jurakovic/TimestampCopy/tree/v2.1.0) | Final PowerShell release. [`TimestampCopy.ps1`](https://github.com/jurakovic/TimestampCopy/blob/v2.1.0/TimestampCopy.ps1) added CLI parameters for all actions and the three script modes. Superseded by 3.0.0, which does the same work as a native executable and starts in about 60 ms instead of about 1300 ms. |
 
 ---
 

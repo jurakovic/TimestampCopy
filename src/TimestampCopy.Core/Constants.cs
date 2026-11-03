@@ -2,7 +2,7 @@ namespace TimestampCopy.Core;
 
 public static class Constants
 {
-	public const string Homepage = "https://github.com/jurakovic/timestamp-copy";
+	public const string Homepage = "https://github.com/jurakovic/TimestampCopy";
 	public const string Version = "3.0.0";
 
 	// Compatibility contract with TimestampCopy.ps1 ($datetimeFormat, $appdataPath,
