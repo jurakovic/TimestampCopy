@@ -6,6 +6,10 @@ name: Build
 # trimmer's warnings into errors, so this also checks that trimming keeps what
 # the app needs.
 #
+# The published executables are then measured (size, startup time) and
+# smoke-tested: every action against real files, and install/uninstall against
+# the runner's registry.
+#
 # The version is the one the next release from this branch would get. The
 # published folder is uploaded for testing; releases are made with the
 # Publish workflow.
@@ -50,8 +54,102 @@ jobs:
           chmod +x ./publish.sh
           ./publish.sh publish -u true
 
-      - name: Check the published tscp.exe starts
-        run: ./publish/win-x64/tscp.exe -v
+      # What a context menu click costs: the size of what ships, and how long tscp.exe takes to
+      # start and exit. The median of 21 runs, after one that warms the file cache.
+      - name: Measure
+        shell: pwsh
+        run: |
+          $dir = 'publish/win-x64'
+          $exe = Join-Path $dir 'tscp.exe'
+          $files = Get-ChildItem $dir -File -Recurse
+          $size = ($files | Measure-Object Length -Sum).Sum / 1MB
+
+          & $exe -v | Out-Null
+          $ms = 1..21 | ForEach-Object {
+            (Measure-Command { & $exe -v | Out-Null }).TotalMilliseconds
+          } | Sort-Object
+
+          $line = '{0} files, {1:N1} MB, tscp.exe -v starts and exits in {2:N0} ms (median of 21, fastest {3:N0} ms)' -f `
+            $files.Count, $size, $ms[10], $ms[0]
+          Write-Host $line
+          "### Published build`n`n$line" >> $env:GITHUB_STEP_SUMMARY
+
+      # Runs the published executables the way the context menu does, against throwaway files and
+      # the runner's own registry: GitHub's Windows runners run as administrator, which -i and -u
+      # need. Not for a real machine, since -u removes the installed menu and the clipboard.
+      - name: Smoke test
+        shell: pwsh
+        # A failing tscpw.exe shows a message box, which nobody here will close
+        timeout-minutes: 5
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $false
+
+          $tscp = (Resolve-Path 'publish/win-x64/tscp.exe').Path
+          $tscpw = (Resolve-Path 'publish/win-x64/tscpw.exe').Path
+
+          function Tscp {
+            & $tscp @args
+            if ($LASTEXITCODE -ne 0) { throw "tscp.exe $args exited with $LASTEXITCODE" }
+          }
+
+          function Assert-Times($item, [datetime]$created, [datetime]$modified, $what) {
+            $item.Refresh()
+            if ($item.CreationTime -ne $created -or $item.LastWriteTime -ne $modified) {
+              throw "${what}: expected $created / $modified, got $($item.CreationTime) / $($item.LastWriteTime)"
+            }
+            Write-Host "OK: $what" -ForegroundColor Green
+          }
+
+          $dir = New-Item -ItemType Directory -Path (Join-Path $env:RUNNER_TEMP 'smoke')
+          $source = New-Item -Path (Join-Path $dir 'source.txt') -Value 'source'
+          $target = New-Item -Path (Join-Path $dir 'target.txt') -Value 'target'
+          $source.CreationTime = '2001-02-03 04:05:06'
+          $source.LastWriteTime = '2002-03-04 05:06:07'
+          $target.CreationTime = '2011-12-13 14:15:16'
+          $target.LastWriteTime = '2012-01-02 03:04:05'
+
+          Tscp -h
+
+          Tscp -c $source.FullName
+          Tscp -p $target.FullName -y
+          Assert-Times $target '2001-02-03 04:05:06' '2002-03-04 05:06:07' 'Paste'
+          Tscp -z -y
+          Assert-Times $target '2011-12-13 14:15:16' '2012-01-02 03:04:05' 'Undo'
+          Tscp -pc $target.FullName -y
+          Assert-Times $target '2001-02-03 04:05:06' '2012-01-02 03:04:05' 'Paste Date Created'
+          Tscp -z -y
+          Tscp -pm $target.FullName -y
+          Assert-Times $target '2011-12-13 14:15:16' '2002-03-04 05:06:07' 'Paste Date Modified'
+
+          & $tscp -c (Join-Path $dir 'missing.txt') -q
+          if ($LASTEXITCODE -ne 1) { throw "A missing path exited with $LASTEXITCODE instead of 1" }
+          Write-Host 'OK: Guard' -ForegroundColor Green
+
+          # & does not wait for a windowed exe
+          $p = Start-Process -FilePath $tscpw -ArgumentList '-c', "`"$($target.FullName)`"" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "tscpw.exe -c exited with $($p.ExitCode)" }
+          Tscp -p $source.FullName -y
+          Assert-Times $source '2011-12-13 14:15:16' '2002-03-04 05:06:07' 'Copy (Background)'
+
+          $key = 'Registry::HKEY_CLASSES_ROOT\*\shell\TimestampCopy'
+          function Assert-Installed($expected, $what) {
+            $icon = (Get-Item -LiteralPath $key).GetValue('Icon')
+            $command = (Get-Item -LiteralPath "$key\shell\010-Copy\command").GetValue('')
+            if ($icon -ne $tscp) { throw "${what}: Icon is '$icon', expected '$tscp'" }
+            if ($command -ne $expected) { throw "${what}: Copy runs '$command', expected '$expected'" }
+            Write-Host "OK: $what" -ForegroundColor Green
+          }
+
+          Tscp -i
+          Assert-Installed "`"$tscp`" -m Standalone -c `"%1`"" 'Install'
+          Tscp -b
+          Assert-Installed "`"$tscpw`" -c `"%1`"" 'Install (Background Mode)'
+          Tscp -u
+          if (Test-Path -LiteralPath $key) { throw 'Uninstall left the menu in place' }
+          if (Test-Path (Join-Path $env:LOCALAPPDATA 'TimestampCopy')) { throw 'Uninstall left the clipboard in place' }
+          Write-Host 'OK: Uninstall' -ForegroundColor Green
+          exit 0
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
