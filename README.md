@@ -199,13 +199,15 @@ If the contents are not in the expected format, an error message is shown and th
 
 ### Building from Source
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and Git Bash.
 
-```powershell
-.\build.ps1
+```bash
+./publish.sh publish
 ```
 
-This publishes both executables into `publish\win-x64` as self-contained, trimmed, ReadyToRun binaries. Add `-Zip` to also produce the release archive.
+This runs the tests, then publishes both executables into `publish/win-x64` as self-contained, trimmed, ReadyToRun binaries. `./publish.sh package` then zips them into `release/`, which needs `zip` on the `PATH`. Run `./publish.sh -h` for all options.
+
+Releases are made with the [Publish](.github/workflows/publish.yml) workflow, run from the *Actions* tab. It computes the version from the latest `v3.x.y` tag (the next release from `master`, the next preview from any other branch), runs the same three steps, tags the commit it built and publishes the zip and its checksum as a GitHub release.
 
 ### Screenshots
 

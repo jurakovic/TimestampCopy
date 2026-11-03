@@ -21,9 +21,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- The version of local builds. Releases override it with the version publish.sh
+         computes from the git tags. -->
     <Version>3.0.0</Version>
-    <!-- Keeps ProductVersion a plain 3.0.0 instead of 3.0.0+<commit hash>, so build.ps1 can
-         name the release zip from it -->
+    <!-- Keeps the version a plain 3.0.0 instead of 3.0.0+<commit hash>, so tscp -v prints
+         exactly the version publish.sh released it as -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Product>Timestamp Copy</Product>
     <Company>jurakovic</Company>

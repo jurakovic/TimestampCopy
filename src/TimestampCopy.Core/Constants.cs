@@ -1,9 +1,17 @@
+using System.Reflection;
+
 namespace TimestampCopy.Core;
 
 public static class Constants
 {
 	public const string Homepage = "https://github.com/jurakovic/TimestampCopy";
-	public const string Version = "3.0.0";
+
+	// The <Version> of the build: the default in src/Directory.Build.props, or the one
+	// publish.sh passes with -p:Version, which the release pipeline computes from the git tags.
+	public static string Version { get; } =
+		typeof(Constants).Assembly
+			.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+		?? "0.0.0";
 
 	// Compatibility contract with the 2.x PowerShell releases ($datetimeFormat, $appdataPath,
 	// $clipPath, $undoPath in TimestampCopy.ps1). Upgrading from 2.x keeps whatever was already

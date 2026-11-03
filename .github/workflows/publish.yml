@@ -1,0 +1,218 @@
+name: Publish
+
+# Tests, publishes and releases Timestamp Copy, see publish.sh. Run it from the
+# Actions tab ("Run workflow"):
+#
+# - The version is computed from the latest v3.x.y tag: master gives the
+#   next release (3.0.1), other branches the next preview (3.0.1-preview.1).
+#   Bump Type picks the part that is increased; Version overrides it all.
+# - The executables are published on Windows, since ReadyToRun and the
+#   tests need it, and the zip is checked to hold the version it is named
+#   after by running the published tscp.exe -v.
+# - The release is tagged v<version> on the built commit and published on
+#   GitHub with the zip and its SHA-256 checksum. Previews are marked as
+#   pre-releases.
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Step 1: Publish'
+        required: false
+        default: true
+        type: boolean
+      package:
+        description: 'Step 2: Package'
+        required: false
+        default: true
+        type: boolean
+      release:
+        description: 'Step 3: Release'
+        required: false
+        default: true
+        type: boolean
+      source_branch:
+        description: 'Source branch (branch to build from, "auto" uses workflow ref)'
+        required: false
+        default: 'auto'
+        type: string
+      version:
+        description: 'Version (leave empty or "auto" to compute from last tag)'
+        required: false
+        default: 'auto'
+        type: string
+      bump_type:
+        description: 'Bump Type (ignored when version is explicit)'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      base_ver:
+        description: 'Major version stream (tags outside this major are ignored)'
+        required: false
+        default: '3'
+        type: string
+      preview:
+        description: 'Preview release (auto = follows branch: non-master → true, master → false)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - 'true'
+          - 'false'
+
+permissions:
+  contents: read
+
+# Two releases at once could compute the same version
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      commit: ${{ steps.ver.outputs.commit }}
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      SOURCE_BRANCH: ${{ inputs.source_branch == 'auto' && github.ref_name || inputs.source_branch }}
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.source_branch == 'auto' && github.ref || inputs.source_branch }}
+          fetch-depth: 0
+
+      - name: Fetch publish.sh
+        if: ${{ inputs.source_branch != 'auto' }}
+        run: git restore --source "origin/$GITHUB_REF_NAME" -- publish.sh
+
+      - name: Compute Version
+        id: ver
+        env:
+          INPUT_PUBLISH: ${{ inputs.publish }}
+          INPUT_PACKAGE: ${{ inputs.package }}
+          INPUT_RELEASE: ${{ inputs.release }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_BUMP_TYPE: ${{ inputs.bump_type }}
+          INPUT_BASE_VER: ${{ inputs.base_ver }}
+          INPUT_PREVIEW: ${{ inputs.preview }}
+        run: |
+          if [ "$INPUT_RELEASE" = true ] && { [ "$INPUT_PUBLISH" != true ] || [ "$INPUT_PACKAGE" != true ]; }; then
+            echo "::error::Step 3 (Release) needs steps 1 (Publish) and 2 (Package)"
+            exit 1
+          fi
+          if [ "$INPUT_PACKAGE" = true ] && [ "$INPUT_PUBLISH" != true ]; then
+            echo "::error::Step 2 (Package) needs step 1 (Publish)"
+            exit 1
+          fi
+
+          chmod +x ./publish.sh
+          if ! VERSION=$(GITHUB_REF_NAME="$SOURCE_BRANCH" ./publish.sh version -v "$INPUT_VERSION" -b "$INPUT_BUMP_TYPE" -M "$INPUT_BASE_VER" -p "$INPUT_PREVIEW"); then
+            echo "$VERSION"
+            echo "::error::Could not compute the version"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install zip
+        if: ${{ inputs.package }}
+        run: choco install zip -y --no-progress
+
+      - name: Publish
+        if: ${{ inputs.publish }}
+        run: |
+          GITHUB_REF_NAME="$SOURCE_BRANCH" ./publish.sh publish -v "$VERSION" -u true
+          find publish
+
+      - name: Package
+        if: ${{ inputs.package }}
+        run: |
+          GITHUB_REF_NAME="$SOURCE_BRANCH" ./publish.sh package -v "$VERSION" -u true
+          find release
+
+          {
+            echo "### Timestamp Copy $VERSION"
+            echo
+            echo "- Commit: $(git rev-parse HEAD)"
+            echo "- SHA-256 of the zip: \`$(cut -d ' ' -f 1 release/checksums.txt)\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Artifacts
+        if: ${{ inputs.package }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: TimestampCopy-${{ env.VERSION }}
+          path: release/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: ${{ inputs.release }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The commit that was built, even if the branch moved since
+          ref: ${{ needs.build.outputs.commit }}
+          fetch-depth: 0
+
+      - name: Fetch publish.sh
+        if: ${{ inputs.source_branch != 'auto' }}
+        run: git restore --source "origin/$GITHUB_REF_NAME" -- publish.sh
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: TimestampCopy-${{ needs.build.outputs.version }}
+          path: release
+
+      - name: Git Tag
+        run: |
+          chmod +x ./publish.sh
+          ./publish.sh release -v "$VERSION" -u true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          find release
+          prerelease=()
+          case "$VERSION" in
+            *-*) prerelease=(--prerelease) ;;
+          esac
+          gh release create "v$VERSION" release/* \
+            --verify-tag \
+            --title "v$VERSION" \
+            --generate-notes \
+            "${prerelease[@]}"
