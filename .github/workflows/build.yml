@@ -10,8 +10,9 @@ name: Build
 # smoke-tested: every action against real files, and install/uninstall against
 # the runner's registry.
 #
-# The version is the one the next release from this branch would get. The
-# published folder is uploaded for testing; releases are made with the
+# The version is <next release>-build.<run number>, e.g. 3.0.0-build.42: the
+# version Publish would release from master next, marked as a build of it.
+# The published folder is uploaded for testing; releases are made with the
 # Publish workflow.
 on:
   push:
@@ -49,10 +50,18 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Test and publish
+      - name: Compute version
         run: |
           chmod +x ./publish.sh
-          ./publish.sh publish -u true
+          if ! NEXT=$(./publish.sh version -p false); then
+            echo "$NEXT"
+            echo "::error::Could not compute the version"
+            exit 1
+          fi
+          echo "VERSION=$NEXT-build.$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
+      - name: Test and publish
+        run: ./publish.sh publish -v "$VERSION" -u true
 
       # What a context menu click costs: the size of what ships, and how long tscp.exe takes to
       # start and exit. The median of 21 runs, after one that warms the file cache.
@@ -72,7 +81,7 @@ jobs:
           $line = '{0} files, {1:N1} MB, tscp.exe -v starts and exits in {2:N0} ms (median of 21, fastest {3:N0} ms)' -f `
             $files.Count, $size, $ms[10], $ms[0]
           Write-Host $line
-          "### Published build`n`n$line" >> $env:GITHUB_STEP_SUMMARY
+          "### Timestamp Copy $env:VERSION`n`n$line" >> $env:GITHUB_STEP_SUMMARY
 
       # Runs the published executables the way the context menu does, against throwaway files and
       # the runner's own registry: GitHub's Windows runners run as administrator, which -i and -u
