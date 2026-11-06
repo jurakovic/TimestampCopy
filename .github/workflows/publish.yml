@@ -3,9 +3,11 @@ name: Publish
 # Tests, publishes and releases Timestamp Copy, see publish.sh. Run it from the
 # Actions tab ("Run workflow"):
 #
-# - The version is computed from the latest v3.x.y tag: master gives the
-#   next release (3.0.1), other branches the next preview (3.0.1-preview.1).
-#   Bump Type picks the part that is increased; Version overrides it all.
+# - The version is computed from the latest tag of the current major
+#   (v3.x.y until there is a v4 tag; Base Ver picks another): master gives
+#   the next release (3.0.1), other branches the next preview
+#   (3.0.1-preview.1). Bump Type picks the part that is increased; Version
+#   overrides it all.
 # - The executables are published on Windows, since Native AOT compiles
 #   for the OS it runs on and the tests need it, and the zip is checked to
 #   hold the version it is named after by running the published tscp.exe -v.
@@ -51,9 +53,9 @@ on:
           - minor
           - patch
       base_ver:
-        description: 'Major version stream (tags outside this major are ignored)'
+        description: 'Major version stream (leave empty or "auto" for the major of the latest tag, at least 3)'
         required: false
-        default: '3'
+        default: 'auto'
         type: string
       preview:
         description: 'Preview release (auto = follows branch: non-master → true, master → false)'
