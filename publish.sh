@@ -14,7 +14,12 @@ PREVIEW="auto"
 ARCH="win-x64"
 SKIP_TESTS="false"
 UNATTENDED="false"
-BASE_VER="3"
+# The major version stream: "auto" is the major of the latest release or preview tag, but at
+# least FIRST_MAJOR, the major the versions start at (the 1.x and 2.x tags are the releases
+# before the native rewrite); a number picks that stream, e.g. an older one for a fix after a
+# major release
+BASE_VER="auto"
+FIRST_MAJOR="3"
 
 TEST_PROJECT="tests/TimestampCopy.Tests/TimestampCopy.Tests.csproj"
 
@@ -204,7 +209,15 @@ function read_args() {
         ;;
       "-M" | "--base_ver")
         shift
-        BASE_VER="$1"
+        # Empty, as from a cleared workflow input, means auto, as for -v
+        if [ -z "$1" ] || [ "$1" = "auto" ]; then
+            BASE_VER="auto"
+        elif [[ "$1" =~ ^(0|[1-9][0-9]*)$ ]]; then
+            BASE_VER="$1"
+        else
+            invalid_argument "$1" "auto 3 4 ..."
+            exit 1
+        fi
         ;;
       *)
         if is_in_array "$1" "${_command_values[@]}"; then
@@ -217,6 +230,10 @@ function read_args() {
     esac
     shift
   done
+
+  if [ "$BASE_VER" = "auto" ]; then
+    BASE_VER=$(latest_major)
+  fi
 
   if [ -n "$GITHUB_REF_NAME" ]; then
     BRANCH="$GITHUB_REF_NAME"
@@ -323,7 +340,7 @@ function help() {
   echo "  -v, --version <VERSION>          auto*, x.y.z, x.y.z-preview.N"
   echo "  -b, --bump_type <BUMP_TYPE>      major, minor, patch*"
   echo "  -p, --preview <PREVIEW>          auto*, true, false"
-  echo "  -M, --base_ver <BASE_VER>        3*, 4, 5, ..."
+  echo "  -M, --base_ver <BASE_VER>        auto*, 3, 4, ... (auto: the major of the latest tag, at least $FIRST_MAJOR)"
   echo "  -a, --arch <ARCH>                win-x64*"
   echo "  -s, --skip_tests <SKIP_TESTS>    true, false*"
   echo "  -u, --unattended <UNATTENDED>    true, false*"
@@ -339,7 +356,7 @@ function help() {
   echo "  ./publish.sh publish -b minor -p true"
   echo "  ./publish.sh version"
   echo "  ./publish.sh version -b minor"
-  echo "  ./publish.sh version -M 4"
+  echo "  ./publish.sh version -M 3"
 }
 
 function is_in_array() {
@@ -358,6 +375,19 @@ function invalid_argument() {
   echo "Allowed values: ${*:2}"
   echo
   help
+}
+
+# The major of the latest release or preview tag (v<major>.<minor>.<patch>, optionally
+# -preview.N), or FIRST_MAJOR when there is none or it is lower
+function latest_major() {
+  local major
+  major=$(git tag --list 'v*' \
+    | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?$' \
+    | sed -E 's/^v([0-9]+)\..*/\1/' | sort -n | tail -1)
+  if [ -z "$major" ] || ((10#$major < FIRST_MAJOR)); then
+    major="$FIRST_MAJOR"
+  fi
+  echo "$major"
 }
 
 function version_compare() {
