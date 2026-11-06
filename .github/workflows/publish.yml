@@ -6,8 +6,11 @@ name: Publish
 # - The version is computed from the latest tag of the current major
 #   (v3.x.y until there is a v4 tag; Base Ver picks another): master gives
 #   the next release (3.0.1), other branches the next preview
-#   (3.0.1-preview.1). Bump Type picks the part that is increased; Version
-#   overrides it all.
+#   (3.0.1-preview.1). Bump Type picks the part that is increased; while a
+#   preview is open, a bump past it starts a new version and one it covers
+#   continues it (after 3.0.0 and 3.0.1-preview.2, minor gives 3.1.0 or
+#   3.1.0-preview.1, patch 3.0.1 or 3.0.1-preview.3). Version overrides it
+#   all.
 # - The executables are published on Windows, since Native AOT compiles
 #   for the OS it runs on and the tests need it, and the zip is checked to
 #   hold the version it is named after by running the published tscp.exe -v.
@@ -44,7 +47,7 @@ on:
         default: 'auto'
         type: string
       bump_type:
-        description: 'Bump Type (ignored when version is explicit)'
+        description: 'Bump Type (ignored when version is explicit; continues an open preview it does not pass)'
         required: false
         default: 'patch'
         type: choice

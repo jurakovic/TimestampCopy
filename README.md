@@ -207,7 +207,7 @@ Requires Windows, the [.NET 10 SDK](https://dotnet.microsoft.com/download), the 
 
 This runs the tests, then publishes both executables into `publish/win-x64` with Native AOT. `./publish.sh package` then zips them into `release/`, which needs `zip` on the `PATH`. Run `./publish.sh -h` for all options.
 
-Releases are made with the [Publish](.github/workflows/publish.yml) workflow, run from the *Actions* tab. It computes the version from the latest tag of the current major, `v3.x.y` until there is a `v4` tag (the next release from `master`, the next preview from any other branch), runs the same three steps, tags the commit it built and publishes the zip and its checksum as a GitHub release. Every run of the [Build](.github/workflows/build.yml) workflow uploads both executables as well, versioned `<next release>-build.<run number>` (e.g. `3.0.0-build.42`).
+Releases are made with the [Publish](.github/workflows/publish.yml) workflow, run from the *Actions* tab. It computes the version from the latest tag of the current major, `v3.x.y` until there is a `v4` tag (the next release from `master`, the next preview from any other branch), runs the same three steps, tags the commit it built and publishes the zip and its checksum as a GitHub release. While a preview is open, a *Bump Type* past it starts a new version and one it covers continues it: after `3.0.0` and `3.0.1-preview.2`, minor gives `3.1.0` (or `3.1.0-preview.1` from a branch) and patch `3.0.1` (or `3.0.1-preview.3`). Every run of the [Build](.github/workflows/build.yml) workflow uploads both executables as well, versioned `<next release>-build.<run number>` (e.g. `3.0.0-build.42`).
 
 ### Screenshots
 
