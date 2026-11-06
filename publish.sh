@@ -88,7 +88,7 @@ function publish() {
 function package() {
   local publish_path="publish/$ARCH"
   local release_path="release"
-  local archive_name="TimestampCopy-${VERSION}-${ARCH}.zip"
+  local archive_name="TimestampCopy_v${VERSION}_${ARCH}.zip"
 
   if [ ! -f "$publish_path/tscp.exe" ]; then
     echo "Error. $publish_path/tscp.exe not found, run the publish command first."

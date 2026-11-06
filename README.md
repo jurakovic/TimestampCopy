@@ -37,7 +37,7 @@ There is nothing else to install. The executables are native – no .NET runtime
 
 ### Installation
 
-1. Download `TimestampCopy-<version>-win-x64.zip` from the [latest release](https://github.com/jurakovic/TimestampCopy/releases/latest).
+1. Download `TimestampCopy_v<version>_win-x64.zip` from the [latest release](https://github.com/jurakovic/TimestampCopy/releases/latest).
 2. Unzip it somewhere permanent. The installer registers the path you unzipped it to, so pick a location you will not move afterwards. Keep `tscp.exe` and `tscpw.exe` together – Background Mode runs `tscpw.exe` from the same folder.
 3. Open an elevated terminal ('Run as Administrator') in that folder and install the context menu entries.
 
